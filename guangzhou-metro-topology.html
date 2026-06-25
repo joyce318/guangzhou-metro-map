@@ -509,24 +509,22 @@
             transform: scale(1.3);
         }
 
-        .station.lit {
-            width: 32px;
-            height: 36px;
-            animation: castleGlow 3s ease-in-out infinite;
+        .castle-tower {
+            width: 28px;
+            height: 32px;
+            position: relative;
         }
-        .station.lit::before {
-            content: '';
+        .castle-tower .tower-roof {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 8px;
-            height: 10px;
+            width: 10px;
+            height: 12px;
             background: linear-gradient(to bottom, #8b4513 0%, #a0522d 50%, #8b4513 100%);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
-        .station.lit::after {
-            content: '';
+        .castle-tower .tower-body {
             position: absolute;
             bottom: 0;
             left: 50%;
@@ -540,49 +538,47 @@
                 inset 0 -5px 10px rgba(0,0,0,0.3),
                 0 0 15px rgba(255, 215, 0, 0.5);
         }
-        .station.lit.transfer {
-            width: 40px;
-            height: 44px;
+        .station.transfer .castle-tower {
+            width: 36px;
+            height: 40px;
         }
-        .station.lit.transfer::before {
-            width: 10px;
-            height: 12px;
+        .station.transfer .castle-tower .tower-roof {
+            width: 12px;
+            height: 14px;
         }
-        .station.lit.transfer::after {
+        .station.transfer .castle-tower .tower-body {
             width: 32px;
             height: 28px;
         }
 
-        .station.snitch {
-            width: 36px;
-            height: 40px;
-            animation: castleGlow 2s ease-in-out infinite;
+        .golden-castle {
+            width: 32px;
+            height: 36px;
+            position: relative;
         }
-        .station.snitch::before {
-            content: '';
+        .golden-castle .golden-roof-left {
             position: absolute;
             top: 0;
-            left: 30%;
+            left: 25%;
             transform: translateX(-50%);
-            width: 6px;
-            height: 8px;
+            width: 8px;
+            height: 10px;
             background: linear-gradient(to bottom, #ffd700 0%, #daa520 100%);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
         }
-        .station.snitch::after {
-            content: '';
+        .golden-castle .golden-roof-right {
             position: absolute;
             top: 0;
-            right: 30%;
+            right: 25%;
             transform: translateX(50%);
-            width: 6px;
-            height: 8px;
+            width: 8px;
+            height: 10px;
             background: linear-gradient(to bottom, #ffd700 0%, #daa520 100%);
             clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
         }
-        .station.snitch span {
+        .golden-castle .golden-body {
             position: absolute;
             bottom: 0;
             left: 50%;
@@ -597,26 +593,26 @@
                 0 0 30px rgba(255, 215, 0, 0.5),
                 inset 0 -5px 10px rgba(0,0,0,0.3);
         }
-        .station.snitch.transfer {
-            width: 44px;
-            height: 48px;
+        .station.transfer .golden-castle {
+            width: 40px;
+            height: 44px;
         }
-        .station.snitch.transfer::before,
-        .station.snitch.transfer::after {
-            width: 8px;
-            height: 10px;
+        .station.transfer .golden-castle .golden-roof-left,
+        .station.transfer .golden-castle .golden-roof-right {
+            width: 10px;
+            height: 12px;
         }
-        .station.snitch.transfer span {
+        .station.transfer .golden-castle .golden-body {
             width: 36px;
             height: 34px;
         }
 
-        .station.fogged {
+        .locked-spiderweb {
             width: 28px;
             height: 28px;
+            position: relative;
         }
-        .station.fogged::before {
-            content: '';
+        .locked-spiderweb .lock-top {
             position: absolute;
             top: 3px;
             left: 50%;
@@ -627,8 +623,7 @@
             border-radius: 3px 3px 0 0;
             border: 1px solid #333;
         }
-        .station.fogged::after {
-            content: '';
+        .locked-spiderweb .lock-body {
             position: absolute;
             bottom: 3px;
             left: 50%;
@@ -639,7 +634,7 @@
             border: 2px solid #4a4a4a;
             border-radius: 4px;
         }
-        .station.fogged .spider-web {
+        .locked-spiderweb .web-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -647,7 +642,7 @@
             height: 100%;
             pointer-events: none;
         }
-        .station.fogged .spider-web::before {
+        .locked-spiderweb .web-overlay::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -656,7 +651,7 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(150, 150, 150, 0.4), transparent);
         }
-        .station.fogged .spider-web::after {
+        .locked-spiderweb .web-overlay::after {
             content: '';
             position: absolute;
             top: 0;
@@ -665,7 +660,7 @@
             height: 100%;
             background: linear-gradient(180deg, transparent, rgba(150, 150, 150, 0.4), transparent);
         }
-        .station.fogged .spider-web .web-line {
+        .locked-spiderweb .web-line {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -674,11 +669,11 @@
             background: rgba(150, 150, 150, 0.3);
             transform-origin: left center;
         }
-        .station.fogged .spider-web .web-line:nth-child(1) { transform: rotate(-30deg); }
-        .station.fogged .spider-web .web-line:nth-child(2) { transform: rotate(30deg); }
-        .station.fogged .spider-web .web-line:nth-child(3) { transform: rotate(-60deg); }
-        .station.fogged .spider-web .web-line:nth-child(4) { transform: rotate(60deg); }
-        .station.fogged .spider {
+        .locked-spiderweb .web-line:nth-child(1) { transform: rotate(-30deg); }
+        .locked-spiderweb .web-line:nth-child(2) { transform: rotate(30deg); }
+        .locked-spiderweb .web-line:nth-child(3) { transform: rotate(-60deg); }
+        .locked-spiderweb .web-line:nth-child(4) { transform: rotate(60deg); }
+        .locked-spiderweb .spider-dot {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -688,17 +683,56 @@
             border-radius: 50%;
             transform: translate(-50%, -50%);
         }
-        .station.fogged.transfer {
+        .station.transfer .locked-spiderweb {
             width: 36px;
             height: 36px;
         }
-        .station.fogged.transfer::before {
+        .station.transfer .locked-spiderweb .lock-top {
             width: 14px;
             height: 8px;
         }
-        .station.fogged.transfer::after {
+        .station.transfer .locked-spiderweb .lock-body {
             width: 26px;
             height: 20px;
+        }
+
+        .station.lit {
+            background: none;
+            border: none;
+            box-shadow: none;
+            animation: castleGlow 3s ease-in-out infinite;
+        }
+        .station.lit::before {
+            content: none;
+        }
+        .station.lit .castle-tower {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .station.snitch {
+            background: none;
+            border: none;
+            box-shadow: none;
+            animation: castleGlow 2s ease-in-out infinite;
+        }
+
+        .station.fogged {
+            background: none;
+            border: none;
+            filter: none;
+        }
+        .station.fogged::after {
+            content: none;
+        }
+        .station.fogged .locked-spiderweb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(1px) grayscale(0.6);
         }
 
         @keyframes castleGlow {
@@ -1786,26 +1820,41 @@
                 const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
                 if (recordCount >= 5 && !unlitStations.has(name)) {
                     stationEl.classList.add('snitch');
-                    const spanEl = document.createElement('span');
-                    stationEl.appendChild(spanEl);
+                    const goldenCastle = document.createElement('div');
+                    goldenCastle.className = 'golden-castle';
+                    goldenCastle.innerHTML = `
+                        <div class="golden-roof-left"></div>
+                        <div class="golden-roof-right"></div>
+                        <div class="golden-body"></div>
+                    `;
+                    stationEl.appendChild(goldenCastle);
                 } else if ((litStations.has(name) || recordCount > 0) && !unlitStations.has(name)) {
                     stationEl.classList.add('lit');
                     if (!litStations.has(name) && recordCount > 0) {
                         litStations.add(name);
                     }
+                    const castleTower = document.createElement('div');
+                    castleTower.className = 'castle-tower';
+                    castleTower.innerHTML = `
+                        <div class="tower-roof"></div>
+                        <div class="tower-body"></div>
+                    `;
+                    stationEl.appendChild(castleTower);
                 } else {
                     stationEl.classList.add('fogged');
-                    const spiderWeb = document.createElement('div');
-                    spiderWeb.className = 'spider-web';
-                    for (let i = 0; i < 4; i++) {
-                        const webLine = document.createElement('div');
-                        webLine.className = 'web-line';
-                        spiderWeb.appendChild(webLine);
-                    }
-                    stationEl.appendChild(spiderWeb);
-                    const spider = document.createElement('div');
-                    spider.className = 'spider';
-                    stationEl.appendChild(spider);
+                    const lockedSpiderweb = document.createElement('div');
+                    lockedSpiderweb.className = 'locked-spiderweb';
+                    lockedSpiderweb.innerHTML = `
+                        <div class="lock-top"></div>
+                        <div class="lock-body"></div>
+                        <div class="web-overlay"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="spider-dot"></div>
+                    `;
+                    stationEl.appendChild(lockedSpiderweb);
                 }
                 
                 // 悬停事件
@@ -1990,17 +2039,19 @@
                     stationEl.classList.remove('snitch');
                     stationEl.classList.add('fogged');
                     stationEl.innerHTML = '';
-                    const spiderWeb = document.createElement('div');
-                    spiderWeb.className = 'spider-web';
-                    for (let i = 0; i < 4; i++) {
-                        const webLine = document.createElement('div');
-                        webLine.className = 'web-line';
-                        spiderWeb.appendChild(webLine);
-                    }
-                    stationEl.appendChild(spiderWeb);
-                    const spider = document.createElement('div');
-                    spider.className = 'spider';
-                    stationEl.appendChild(spider);
+                    const lockedSpiderweb = document.createElement('div');
+                    lockedSpiderweb.className = 'locked-spiderweb';
+                    lockedSpiderweb.innerHTML = `
+                        <div class="lock-top"></div>
+                        <div class="lock-body"></div>
+                        <div class="web-overlay"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="web-line"></div>
+                        <div class="spider-dot"></div>
+                    `;
+                    stationEl.appendChild(lockedSpiderweb);
                     const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
                     if (nameEl) {
                         nameEl.style.display = 'block';
@@ -2012,10 +2063,23 @@
                     stationEl.innerHTML = '';
                     if (recordCount >= 5) {
                         stationEl.classList.add('snitch');
-                        const spanEl = document.createElement('span');
-                        stationEl.appendChild(spanEl);
+                        const goldenCastle = document.createElement('div');
+                        goldenCastle.className = 'golden-castle';
+                        goldenCastle.innerHTML = `
+                            <div class="golden-roof-left"></div>
+                            <div class="golden-roof-right"></div>
+                            <div class="golden-body"></div>
+                        `;
+                        stationEl.appendChild(goldenCastle);
                     } else {
                         stationEl.classList.add('lit');
+                        const castleTower = document.createElement('div');
+                        castleTower.className = 'castle-tower';
+                        castleTower.innerHTML = `
+                            <div class="tower-roof"></div>
+                            <div class="tower-body"></div>
+                        `;
+                        stationEl.appendChild(castleTower);
                     }
                     const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
                     if (nameEl) {
@@ -2070,17 +2134,19 @@
                 el.classList.remove('snitch');
                 el.classList.add('fogged');
                 el.innerHTML = '';
-                const spiderWeb = document.createElement('div');
-                spiderWeb.className = 'spider-web';
-                for (let i = 0; i < 4; i++) {
-                    const webLine = document.createElement('div');
-                    webLine.className = 'web-line';
-                    spiderWeb.appendChild(webLine);
-                }
-                el.appendChild(spiderWeb);
-                const spider = document.createElement('div');
-                spider.className = 'spider';
-                el.appendChild(spider);
+                const lockedSpiderweb = document.createElement('div');
+                lockedSpiderweb.className = 'locked-spiderweb';
+                lockedSpiderweb.innerHTML = `
+                    <div class="lock-top"></div>
+                    <div class="lock-body"></div>
+                    <div class="web-overlay"></div>
+                    <div class="web-line"></div>
+                    <div class="web-line"></div>
+                    <div class="web-line"></div>
+                    <div class="web-line"></div>
+                    <div class="spider-dot"></div>
+                `;
+                el.appendChild(lockedSpiderweb);
             });
             
             updateStats();
@@ -2101,12 +2167,24 @@
                 
                 if (recordCount >= 5) {
                     el.classList.add('snitch');
-                    const spanEl = document.createElement('span');
-                    el.appendChild(spanEl);
+                    const goldenCastle = document.createElement('div');
+                    goldenCastle.className = 'golden-castle';
+                    goldenCastle.innerHTML = `
+                        <div class="golden-roof-left"></div>
+                        <div class="golden-roof-right"></div>
+                        <div class="golden-body"></div>
+                    `;
+                    el.appendChild(goldenCastle);
                 } else {
                     el.classList.add('lit');
+                    const castleTower = document.createElement('div');
+                    castleTower.className = 'castle-tower';
+                    castleTower.innerHTML = `
+                        <div class="tower-roof"></div>
+                        <div class="tower-body"></div>
+                    `;
+                    el.appendChild(castleTower);
                 }
-                el.classList.remove('fogged');
             });
             
             saveLitStations();
