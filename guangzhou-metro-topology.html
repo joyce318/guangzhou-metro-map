@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 广州地铁活点地图 - Marauder's Metro Map</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* 咒语登录界面 */
+        .spell-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #2a1810 0%, #0d0a05 100%);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 2000px;
+            transition: opacity 1s ease;
+        }
+        .spell-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .parchment-cover {
+            position: relative;
+            width: 500px;
+            height: 600px;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+        }
+        .parchment-top,
+        .parchment-bottom {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(135deg, #d4a574 0%, #c4956a 25%, #dbb896 50%, #c4956a 75%, #d4a574 100%);
+            border: 3px solid #8b6914;
+            box-shadow: 
+                inset 0 0 30px rgba(139, 105, 20, 0.3),
+                0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: transform 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .parchment-top {
+            top: 0;
+            border-radius: 20px 20px 0 0;
+            border-bottom: 2px solid #8b6914;
+            transform-origin: top center;
+        }
+        .parchment-bottom {
+            bottom: 0;
+            border-radius: 0 0 20px 20px;
+            border-top: 2px solid #8b6914;
+            transform-origin: bottom center;
+        }
+        .parchment-cover.opening .parchment-top {
+            transform: rotateX(-160deg);
+        }
+        .parchment-cover.opening .parchment-bottom {
+            transform: rotateX(160deg);
+        }
+        .parchment-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        .parchment-cover.opening .parchment-content {
+            opacity: 0;
+        }
+        .spell-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #3d2914;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            font-family: 'Georgia', serif;
+            letter-spacing: 4px;
+        }
+        .spell-subtitle {
+            font-size: 16px;
+            color: #5d4037;
+            margin-bottom: 40px;
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+        .spell-hint {
+            font-size: 18px;
+            color: #4a3728;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .spell-input-wrapper {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .spell-input {
+            width: 280px;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #8b6914;
+            border-radius: 10px;
+            background: rgba(255, 248, 235, 0.9);
+            color: #3d2914;
+            outline: none;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .spell-input:focus {
+            border-color: #d4a574;
+            box-shadow: 0 0 20px rgba(212, 165, 116, 0.5);
+        }
+        .spell-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: 2px solid #8b6914;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #d4a574, #c4956a);
+            color: #3d2914;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .spell-btn:hover {
+            background: linear-gradient(135deg, #e0b584, #d4a574);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(139, 105, 20, 0.4);
+        }
+        .spell-error {
+            color: #c62828;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+            font-weight: 500;
+        }
+        .spell-attempts {
+            color: #5d4037;
+            font-size: 12px;
+            margin-top: 15px;
+            opacity: 0.8;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            text-align: center;
+            background: rgba(20, 30, 50, 0.9);
+            padding: 10px 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            letter-spacing: 4px;
+            font-family: 'Georgia', serif;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 4px;
+            letter-spacing: 2px;
+        }
+        .control-panel {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(20, 30, 50, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            z-index: 1000;
+            min-width: 280px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        .control-panel.collapsed {
+            min-width: 60px;
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .control-panel.collapsed .control-title,
+        .control-panel.collapsed .btn,
+        .control-panel.collapsed .stats,
+        .control-panel.collapsed .legend {
+            display: none;
+        }
+        .control-panel.collapsed::before {
+            content: '🪄';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            animation: float 2s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-5px); }
+        }
+        .toggle-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.2);
+            border: none;
+            cursor: pointer;
+            color: #ffd700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .toggle-btn:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: rotate(180deg);
+        }
+        .control-title {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+            position: relative;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .btn-magic {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #1a1a2e;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+        .btn-magic:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.6);
+        }
+        .btn-magic.active {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            box-shadow: 0 5px 25px rgba(0, 255, 136, 0.5);
+        }
+        .btn-secondary {
+            background: rgba(100, 120, 150, 0.6);
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: rgba(100, 120, 150, 0.8);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+        .stats {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+        .stat-value {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .legend {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .legend-title {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        .legend-color {
+            width: 30px;
+            height: 6px;
+            margin-right: 12px;
+            border-radius: 3px;
+        }
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .legend-fog { background: rgba(100, 100, 100, 0.8); }
+        .legend-lit { background: linear-gradient(135deg, #ffd700, #ff8c00); }
+        
+        #metro-map-wrapper {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 70px);
+            overflow: auto;
+            background: rgba(15, 25, 45, 0.9);
+        }
+        
+        #metro-map-wrapper::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+        #metro-map-wrapper::-webkit-scrollbar-track {
+            background: rgba(30, 40, 60, 0.8);
+            border-radius: 7px;
+        }
+        #metro-map-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border-radius: 7px;
+            border: 3px solid rgba(30, 40, 60, 0.8);
+        }
+        #metro-map-wrapper::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #ffe44d, #ffa500);
+        }
+        #metro-map-wrapper::-webkit-scrollbar-corner {
+            background: rgba(30, 40, 60, 0.8);
+        }
+        
+        #metro-map {
+            position: relative;
+            width: 1400px;
+            height: 900px;
+            margin: 0 auto;
+            background: rgba(15, 25, 45, 0.95);
+            transform-origin: center center;
+            transition: transform 0.1s ease-out;
+            border-radius: 30px;
+            border: 3px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+        
+        .zoom-controls {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .zoom-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            background: rgba(20, 30, 50, 0.9);
+            color: #ffd700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .zoom-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .line-path {
+            position: absolute;
+            pointer-events: none;
+        }
+        .line-label {
+            position: absolute;
+            z-index: 3;
+            pointer-events: none;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .station {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #333;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .station:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        .station.fogged {
+            background: rgba(80, 80, 80, 0.6);
+            border-color: rgba(60, 60, 60, 0.8);
+            filter: blur(2px);
+        }
+        .station.fogged::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(100, 100, 100, 0.5) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: fogPulse 3s ease-in-out infinite;
+        }
+        .station.lit {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            animation: broomFloat 2s ease-in-out infinite;
+            font-size: 28px;
+        }
+        .station.lit::before {
+            content: '🧹';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+        }
+        .station.lit.transfer::before {
+            font-size: 36px;
+        }
+        .station.snitch {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            animation: snitchFloat 1.5s ease-in-out infinite;
+            font-size: 0;
+            width: 40px;
+            height: 40px;
+        }
+        .station.snitch::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 30% 30%, #fff7a8 0%, #ffd700 40%, #daa520 70%, #b8860b 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 10px rgba(255, 215, 0, 1),
+                0 0 20px rgba(255, 215, 0, 0.8),
+                0 0 30px rgba(255, 215, 0, 0.5),
+                inset -3px -3px 6px rgba(0, 0, 0, 0.2),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.5);
+        }
+        .station.snitch::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 30px;
+            background: 
+                radial-gradient(ellipse 12px 6px at 0% 50%, transparent 40%, rgba(255, 215, 0, 0.6) 45%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 215, 0, 0.6) 55%, transparent 60%) left,
+                radial-gradient(ellipse 12px 6px at 100% 50%, transparent 40%, rgba(255, 215, 0, 0.6) 45%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 215, 0, 0.6) 55%, transparent 60%) right;
+            animation: wingFlap 0.3s ease-in-out infinite alternate;
+        }
+        .station.snitch.transfer::before {
+            width: 22px;
+            height: 22px;
+        }
+        .station.snitch.transfer::after {
+            width: 60px;
+            height: 36px;
+        }
+        @keyframes wingFlap {
+            0% { transform: translate(-50%, -50%) scaleX(1); }
+            100% { transform: translate(-50%, -50%) scaleX(1.1); }
+        }
+        @keyframes snitchFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(-10deg) scale(1);
+            }
+            25% {
+                transform: translateY(-10px) rotate(5deg) scale(1.05);
+            }
+            50% {
+                transform: translateY(-5px) rotate(10deg) scale(1);
+            }
+            75% {
+                transform: translateY(-12px) rotate(-5deg) scale(1.05);
+            }
+        }
+        @keyframes broomFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-8px) rotate(5deg);
+            }
+        }
+        .station.transfer {
+            width: 32px;
+            height: 32px;
+            border-width: 4px;
+        }
+        .station-name {
+            position: absolute;
+            font-size: 13px;
+            color: #ffffff;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            font-weight: bold;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000;
+            padding: 2px 5px;
+            border-radius: 3px;
+            background: rgba(30, 40, 60, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            will-change: transform;
+        }
+        
+        @keyframes fogPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.9); }
+        }
+        
+        .tooltip {
+            position: fixed;
+            background: rgba(20, 30, 50, 0.95);
+            border-radius: 12px;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            color: #fff;
+            font-size: 14px;
+            z-index: 2000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 250px;
+        }
+        .tooltip.show { opacity: 1; }
+        .tooltip-title {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .tooltip-line {
+            color: #61dafb;
+            font-size: 13px;
+        }
+        .tooltip-status {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            color: #ffd700;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .modal-close {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(255, 100, 100, 0.2);
+            border: none;
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .modal-close:hover {
+            background: rgba(255, 100, 100, 0.4);
+            transform: rotate(90deg);
+        }
+        .modal-body {
+            padding: 20px 25px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            flex: 1;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        .stat-card-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .stat-card-label {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+        .record-list {
+            margin-top: 20px;
+        }
+        .record-item {
+            background: rgba(100, 120, 150, 0.15);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+        .record-item:hover {
+            background: rgba(100, 120, 150, 0.25);
+            transform: translateX(5px);
+        }
+        .record-date {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .record-detail {
+            color: #ccc;
+            font-size: 13px;
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        .record-detail-label {
+            color: #61dafb;
+            margin-right: 8px;
+        }
+        .record-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .record-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        .record-btn-edit {
+            background: rgba(100, 200, 100, 0.2);
+            color: #66bb6a;
+        }
+        .record-btn-edit:hover {
+            background: rgba(100, 200, 100, 0.4);
+        }
+        .record-btn-delete {
+            background: rgba(255, 100, 100, 0.2);
+            color: #ff6b6b;
+        }
+        .record-btn-delete:hover {
+            background: rgba(255, 100, 100, 0.4);
+        }
+        .add-record-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            border: none;
+            border-radius: 12px;
+            color: #1a1a2e;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        .add-record-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-label {
+            color: #ffd700;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: bold;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(100, 120, 150, 0.2);
+            border: 2px solid rgba(100, 120, 150, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .form-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .form-btn-primary {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #1a1a2e;
+        }
+        .form-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+        .form-btn-secondary {
+            background: rgba(100, 120, 150, 0.4);
+            color: #fff;
+        }
+        .form-btn-secondary:hover {
+            background: rgba(100, 120, 150, 0.6);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .empty-state-text {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .fog-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(30, 30, 50, 0.3) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .instructions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(20, 30, 50, 0.95);
+            border-radius: 15px;
+            padding: 20px 25px;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            max-width: 300px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        .instructions.collapsed {
+            max-width: 50px;
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .instructions.collapsed .instructions-title,
+        .instructions.collapsed .instructions-item,
+        .instructions.collapsed .instructions-toggle {
+            display: none;
+        }
+        .instructions.collapsed::before {
+            content: '📖';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            animation: float 2s ease-in-out infinite;
+        }
+        .instructions-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.2);
+            border: none;
+            cursor: pointer;
+            color: #ffd700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .instructions-toggle:hover {
+            background: rgba(255, 215, 0, 0.4);
+            transform: rotate(180deg);
+        }
+        .instructions-title {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .instructions-item {
+            color: #a0a0a0;
+            font-size: 12px;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .instructions-highlight {
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <!-- 咒语登录界面 -->
+    <div class="spell-screen" id="spellScreen">
+        <div class="parchment-cover" id="parchmentCover">
+            <div class="parchment-top" id="parchmentTop"></div>
+            <div class="parchment-bottom" id="parchmentBottom"></div>
+            <div class="parchment-content">
+                <div class="spell-title">⚡ 广州地铁活点地图 ⚡</div>
+                <div class="spell-subtitle">Marauder's Metro Map</div>
+                <div class="spell-hint">请念出咒语以打开地图</div>
+                <div class="spell-input-wrapper">
+                    <input type="text" class="spell-input" id="spellInput" placeholder="输入咒语..." autocomplete="off">
+                    <button class="spell-btn" onclick="checkSpell()">✨ 施咒 ✨</button>
+                </div>
+                <div class="spell-error" id="spellError"></div>
+                <div class="spell-attempts" id="spellAttempts"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header" style="opacity: 0;">
+        <div class="title">⚡ 广州地铁活点地图</div>
+        <div class="subtitle">Marauder's Metro Map - 点亮你的足迹</div>
+    </div>
+    
+    <div class="control-panel" id="controlPanel">
+        <button class="toggle-btn" onclick="togglePanel()" title="折叠/展开">➖</button>
+        <div class="control-title">🪄 魔法控制台</div>
+        <button class="btn btn-magic" id="broomBtn" onclick="toggleBroomMode()">
+            🧹 快速点亮模式
+        </button>
+        <button class="btn btn-secondary" onclick="clearAllLit()">
+            🌫️ 重置迷雾
+        </button>
+        <button class="btn btn-secondary" onclick="showAllStations()">
+            ✨ 点亮全部
+        </button>
+        <button class="btn btn-danger" onclick="resetMap()">
+            🔄 重置地图
+        </button>
+        <div class="stats">
+            <div class="stat-item">
+                <span>已点亮站点:</span>
+                <span class="stat-value" id="litCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span>迷雾站点:</span>
+                <span class="stat-value" id="fogCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span>总站点数:</span>
+                <span class="stat-value" id="totalCount">0</span>
+            </div>
+            <div class="stat-item">
+                <span>探索进度:</span>
+                <span class="stat-value" id="progress">0%</span>
+            </div>
+        </div>
+        <div class="legend">
+            <div class="legend-title">图例说明</div>
+            <div class="legend-item">
+                <div class="legend-icon legend-fog">🌫</div>
+                <span>迷雾覆盖（未探索）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background:transparent;font-size:20px;">🧹</div>
+                <span>已点亮（飞天扫把）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background:transparent;">
+                    <div style="position:relative;width:24px;height:24px;margin:0 auto;">
+                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:radial-gradient(circle at 30% 30%, #fff7a8, #ffd700);border-radius:50%;"></div>
+                    </div>
+                </div>
+                <span>传说级（金色飞贼·5次+）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background:#fff;border:3px solid #333;width:24px;height:24px;">⬤</div>
+                <span>普通站点</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon" style="background:#fff;border:4px solid #333;width:32px;height:32px;">⬤</div>
+                <span>换乘站点</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="metro-map-wrapper">
+        <div id="metro-map">
+            <div class="fog-overlay"></div>
+        </div>
+    </div>
+    
+    <div class="zoom-controls">
+        <button class="zoom-btn" id="zoomIn" onclick="zoomIn()">🔍+</button>
+        <button class="zoom-btn" id="zoomOut" onclick="zoomOut()">🔍-</button>
+        <button class="zoom-btn" id="zoomReset" onclick="resetZoom()">↺</button>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    
+    <div class="modal-overlay" id="stationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">🚇 站点详情</div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="recordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="recordModalTitle">📝 添加记录</div>
+                <button class="modal-close" onclick="closeRecordModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="recordForm">
+                    <div class="form-group">
+                        <label class="form-label">📅 到访时间</label>
+                        <input type="date" class="form-input" id="recordDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">👥 同行的人</label>
+                        <input type="text" class="form-input" id="recordCompanion" placeholder="例如：朋友、家人、同事...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">✨ 做了什么</label>
+                        <textarea class="form-textarea" id="recordActivity" placeholder="记录这次的美好回忆..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="form-btn form-btn-secondary" onclick="closeRecordModal()">取消</button>
+                        <button type="submit" class="form-btn form-btn-primary">保存记录</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="instructions" id="instructionsPanel">
+        <button class="instructions-toggle" onclick="toggleInstructions()" title="折叠/展开">➖</button>
+        <div class="instructions-title">📖 使用说明</div>
+        <div class="instructions-item">
+            <span class="instructions-highlight">👆 普通模式:</span> 点击站点打开详情，添加到访记录
+        </div>
+        <div class="instructions-item">
+            <span class="instructions-highlight">🧹 快速点亮:</span> 开启后点击站点直接点亮/取消
+        </div>
+        <div class="instructions-item">
+            <span class="instructions-highlight">📝 记录内容:</span> 时间、同行的人、做了什么
+        </div>
+        <div class="instructions-item">
+            <span class="instructions-highlight">🌫 迷雾效果:</span> 未点亮的站点被迷雾覆盖
+        </div>
+        <div class="instructions-item">
+            <span class="instructions-highlight">💾 自动保存:</span> 所有记录自动保存到本地
+        </div>
+    </div>
+
+    <script>
+        // 咒语验证
+        const CORRECT_SPELL = '我庄严宣誓我不干好事';
+        let spellAttempts = 0;
+
+        function checkSpell() {
+            const input = document.getElementById('spellInput');
+            const error = document.getElementById('spellError');
+            const attempts = document.getElementById('spellAttempts');
+            const spell = input.value.trim();
+            
+            spellAttempts++;
+            
+            if (spell === CORRECT_SPELL) {
+                error.textContent = '';
+                openParchment();
+            } else {
+                error.textContent = '咒语不对，再想想...';
+                input.value = '';
+                input.focus();
+                
+                if (spellAttempts >= 3) {
+                    attempts.textContent = `已尝试 ${spellAttempts} 次，提示：想想活点地图的咒语`;
+                }
+                if (spellAttempts >= 5) {
+                    attempts.textContent = `已尝试 ${spellAttempts} 次，提示："我庄严宣誓..."`;
+                }
+                
+                // 抖动效果
+                const wrapper = document.querySelector('.spell-input-wrapper');
+                wrapper.style.animation = 'none';
+                setTimeout(() => {
+                    wrapper.style.animation = 'shake 0.5s ease';
+                }, 10);
+            }
+        }
+
+        function openParchment() {
+            const cover = document.getElementById('parchmentCover');
+            const screen = document.getElementById('spellScreen');
+            const header = document.querySelector('.header');
+            
+            cover.classList.add('opening');
+            
+            setTimeout(() => {
+                screen.classList.add('hidden');
+                header.style.opacity = '1';
+                header.style.transition = 'opacity 1s ease';
+            }, 1500);
+        }
+
+        // 回车键提交
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('spellInput');
+            if (input) {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        checkSpell();
+                    }
+                });
+                input.focus();
+            }
+        });
+
+        // 地铁线路颜色配置
+        const lineColors = {
+            '1号线': '#E53935',
+            '2号线': '#1E88E5',
+            '3号线': '#43A047',
+            '3号线北延段': '#43A047',
+            '4号线': '#FB8C00',
+            '5号线': '#8E24AA',
+            '6号线': '#00ACC1',
+            '7号线': '#66BB6A',
+            '8号线': '#FF5722',
+            '9号线': '#7E57C2',
+            '13号线': '#EC407A',
+            '14号线': '#26C6DA',
+            '14号线支线': '#26C6DA',
+            '18号线': '#FF9800',
+            '21号线': '#7CB342',
+            '22号线': '#E91E63',
+            'APM线': '#00BCD4',
+            '广佛线': '#8BC34A',
+            '11号线': '#FF6B6B'
+        };
+
+        // 拓扑图站点坐标（经典横平竖直布局）
+        const metroTopology = {
+            // 1号线 - 水平主线（西向东）
+            '1号线': [
+                { name: '西朗', x: 80, y: 450 },
+                { name: '坑口', x: 130, y: 450 },
+                { name: '花地湾', x: 180, y: 450 },
+                { name: '芳村', x: 230, y: 450 },
+                { name: '黄沙', x: 280, y: 450 },
+                { name: '陈家祠', x: 330, y: 450 },
+                { name: '西门口', x: 380, y: 450 },
+                { name: '公园前', x: 430, y: 450 },
+                { name: '农讲所', x: 480, y: 450 },
+                { name: '烈士陵园', x: 530, y: 450 },
+                { name: '东山口', x: 580, y: 450 },
+                { name: '杨箕', x: 630, y: 450 },
+                { name: '体育西路', x: 680, y: 450 },
+                { name: '体育中心', x: 730, y: 450 },
+                { name: '广州东站', x: 780, y: 450 }
+            ],
+            // 2号线 - 南北主线
+            '2号线': [
+                { name: '广州南站', x: 430, y: 50 },
+                { name: '石壁', x: 430, y: 100 },
+                { name: '会江', x: 430, y: 150 },
+                { name: '南浦', x: 430, y: 200 },
+                { name: '洛溪', x: 430, y: 250 },
+                { name: '南洲', x: 430, y: 300 },
+                { name: '东晓南', x: 430, y: 350 },
+                { name: '江泰路', x: 430, y: 400 },
+                { name: '昌岗', x: 430, y: 420 },
+                { name: '江南西', x: 430, y: 480 },
+                { name: '市二宫', x: 430, y: 530 },
+                { name: '海珠广场', x: 430, y: 580 },
+                { name: '公园前', x: 430, y: 450, transfer: true },
+                { name: '越秀公园', x: 430, y: 650 },
+                { name: '广州火车站', x: 430, y: 700 },
+                { name: '三元里', x: 430, y: 750 },
+                { name: '飞翔公园', x: 430, y: 800 },
+                { name: '白云公园', x: 480, y: 800 },
+                { name: '萧岗', x: 530, y: 800 },
+                { name: '江夏', x: 580, y: 800 },
+                { name: '黄边', x: 630, y: 800 },
+                { name: '嘉禾望岗', x: 680, y: 800, transfer: true }
+            ],
+            // 3号线 - 南北主线（天河-番禺）
+            '3号线': [
+                { name: '番禺广场', x: 880, y: 50 },
+                { name: '市桥', x: 880, y: 100 },
+                { name: '汉溪长隆', x: 880, y: 150 },
+                { name: '大石', x: 880, y: 200 },
+                { name: '厦滘', x: 880, y: 250 },
+                { name: '沥滘', x: 880, y: 300 },
+                { name: '大塘', x: 880, y: 350 },
+                { name: '客村', x: 880, y: 400 },
+                { name: '广州塔', x: 880, y: 450 },
+                { name: '珠江新城', x: 880, y: 500 },
+                { name: '体育西路', x: 680, y: 450, transfer: true },
+                { name: '石牌桥', x: 730, y: 500 },
+                { name: '岗顶', x: 780, y: 500 },
+                { name: '华师', x: 830, y: 500 },
+                { name: '五山', x: 880, y: 500 },
+                { name: '天河客运站', x: 930, y: 500 }
+            ],
+            // 3号线北延段
+            '3号线北延段': [
+                { name: '嘉禾望岗', x: 680, y: 800, transfer: true },
+                { name: '白云机场北', x: 680, y: 850 }
+            ],
+            // 4号线 - 南沙线
+            '4号线': [
+                { name: '南沙客运港', x: 50, y: 100 },
+                { name: '黄阁汽车城', x: 100, y: 100 },
+                { name: '黄阁', x: 150, y: 100 },
+                { name: '蕉门', x: 200, y: 100 },
+                { name: '金洲', x: 250, y: 150 },
+                { name: '飞沙角', x: 300, y: 150 },
+                { name: '广隆', x: 350, y: 150 },
+                { name: '大涌', x: 400, y: 150 },
+                { name: '塘坑', x: 450, y: 150 },
+                { name: '南横', x: 500, y: 150 },
+                { name: '万胜围', x: 550, y: 200 },
+                { name: '官洲', x: 550, y: 250 },
+                { name: '大学城北', x: 550, y: 300 },
+                { name: '大学城南', x: 550, y: 350 },
+                { name: '新造', x: 550, y: 400 },
+                { name: '石碁', x: 550, y: 450 },
+                { name: '车陂南', x: 550, y: 500 },
+                { name: '车陂', x: 550, y: 550 },
+                { name: '黄村', x: 550, y: 600 }
+            ],
+            // 5号线 - 东西线
+            '5号线': [
+                { name: '滘口', x: 80, y: 700 },
+                { name: '坦尾', x: 130, y: 700 },
+                { name: '中山八', x: 180, y: 700 },
+                { name: '西场', x: 230, y: 700 },
+                { name: '西村', x: 280, y: 700 },
+                { name: '广州火车站', x: 430, y: 700, transfer: true },
+                { name: '小北', x: 480, y: 700 },
+                { name: '淘金', x: 530, y: 700 },
+                { name: '区庄', x: 580, y: 700 },
+                { name: '动物园', x: 630, y: 700 },
+                { name: '五羊邨', x: 680, y: 700 },
+                { name: '珠江新城', x: 880, y: 500, transfer: true },
+                { name: '猎德', x: 930, y: 500 },
+                { name: '潭村', x: 980, y: 500 },
+                { name: '员村', x: 1030, y: 500 },
+                { name: '科韵路', x: 1080, y: 500 },
+                { name: '车陂南', x: 550, y: 500, transfer: true },
+                { name: '东圃', x: 550, y: 650 },
+                { name: '三溪', x: 550, y: 700 },
+                { name: '鱼珠', x: 550, y: 750 },
+                { name: '大沙地', x: 550, y: 800 },
+                { name: '大沙东', x: 550, y: 850 },
+                { name: '文冲', x: 550, y: 900 }
+            ],
+            // 6号线 - 东西线
+            '6号线': [
+                { name: '浔峰岗', x: 80, y: 550 },
+                { name: '横沙', x: 130, y: 550 },
+                { name: '沙贝', x: 180, y: 550 },
+                { name: '河沙', x: 230, y: 550 },
+                { name: '如意坊', x: 280, y: 550 },
+                { name: '黄沙', x: 280, y: 450, transfer: true },
+                { name: '文化公园', x: 330, y: 550 },
+                { name: '一德路', x: 380, y: 550 },
+                { name: '海珠广场', x: 430, y: 580, transfer: true },
+                { name: '北京路', x: 480, y: 550 },
+                { name: '团一大广场', x: 530, y: 550 },
+                { name: '东山口', x: 580, y: 450, transfer: true },
+                { name: '区庄', x: 580, y: 700, transfer: true },
+                { name: '黄花岗', x: 630, y: 550 },
+                { name: '沙河顶', x: 680, y: 550 },
+                { name: '沙河', x: 730, y: 550 },
+                { name: '天平架', x: 780, y: 550 },
+                { name: '燕塘', x: 830, y: 550 },
+                { name: '天河客运站', x: 930, y: 500, transfer: true },
+                { name: '长湴', x: 980, y: 550 },
+                { name: '植物园', x: 1030, y: 550 },
+                { name: '龙洞', x: 1080, y: 550 },
+                { name: '柯木塱', x: 1130, y: 550 },
+                { name: '高塘石', x: 1180, y: 550 }
+            ],
+            // 7号线
+            '7号线': [
+                { name: '美的大道', x: 200, y: 200 },
+                { name: '北滘公园', x: 250, y: 200 },
+                { name: '南涌', x: 300, y: 200 },
+                { name: '陈村', x: 350, y: 200 },
+                { name: '锦龙', x: 400, y: 200 },
+                { name: '大洲', x: 450, y: 200 },
+                { name: '广州南站', x: 430, y: 50, transfer: true },
+                { name: '谢村', x: 480, y: 100 },
+                { name: '石壁', x: 430, y: 100, transfer: true },
+                { name: '钟村', x: 530, y: 100 },
+                { name: '汉溪长隆', x: 880, y: 150, transfer: true },
+                { name: '南村万博', x: 880, y: 200 },
+                { name: '员岗', x: 880, y: 250 },
+                { name: '板桥', x: 880, y: 300 },
+                { name: '万胜围', x: 550, y: 200, transfer: true }
+            ],
+            // 8号线
+            '8号线': [
+                { name: '凤凰新村', x: 280, y: 350 },
+                { name: '沙园', x: 330, y: 350 },
+                { name: '宝岗大道', x: 380, y: 350 },
+                { name: '昌岗', x: 430, y: 420, transfer: true },
+                { name: '晓港', x: 480, y: 350 },
+                { name: '中大', x: 530, y: 350 },
+                { name: '鹭江', x: 580, y: 350 },
+                { name: '客村', x: 880, y: 400, transfer: true },
+                { name: '赤岗', x: 880, y: 350 },
+                { name: '磨碟沙', x: 880, y: 300 },
+                { name: '新港东', x: 880, y: 250 },
+                { name: '琶洲', x: 880, y: 200 },
+                { name: '万胜围', x: 550, y: 200, transfer: true }
+            ],
+            // 9号线
+            '9号线': [
+                { name: '飞鹅岭', x: 100, y: 850 },
+                { name: '花都汽车城', x: 150, y: 850 },
+                { name: '花城路', x: 200, y: 850 },
+                { name: '花果山公园', x: 250, y: 850 },
+                { name: '花都广场', x: 300, y: 850 },
+                { name: '马鞍山公园', x: 350, y: 850 },
+                { name: '莲塘', x: 400, y: 850 },
+                { name: '清布', x: 450, y: 850 },
+                { name: '广州北站', x: 500, y: 850 }
+            ],
+            // 13号线
+            '13号线': [
+                { name: '鱼珠', x: 550, y: 750, transfer: true },
+                { name: '裕丰围', x: 600, y: 750 },
+                { name: '大沙东', x: 550, y: 850, transfer: true },
+                { name: '夏园', x: 650, y: 750 },
+                { name: '南岗', x: 700, y: 750 },
+                { name: '白江', x: 750, y: 750 },
+                { name: '沙村', x: 800, y: 750 },
+                { name: '新塘', x: 850, y: 750 },
+                { name: '新沙', x: 900, y: 750 }
+            ],
+            // 14号线
+            '14号线': [
+                { name: '嘉禾望岗', x: 680, y: 800, transfer: true },
+                { name: '白云东平', x: 730, y: 800 },
+                { name: '夏良', x: 780, y: 800 },
+                { name: '太和', x: 830, y: 800 },
+                { name: '竹料', x: 880, y: 800 },
+                { name: '钟落潭', x: 930, y: 800 },
+                { name: '马沥', x: 980, y: 800 },
+                { name: '新和', x: 1030, y: 800 },
+                { name: '太平', x: 1080, y: 800 },
+                { name: '神岗', x: 1130, y: 800 },
+                { name: '赤草', x: 1180, y: 800 },
+                { name: '从化客运站', x: 1230, y: 800 },
+                { name: '东风', x: 1280, y: 800 }
+            ],
+            // 18号线
+            '18号线': [
+                { name: '万顷沙', x: 50, y: 50 },
+                { name: '横沥', x: 100, y: 50 },
+                { name: '番禺广场', x: 880, y: 50, transfer: true },
+                { name: '南村万博', x: 880, y: 200, transfer: true },
+                { name: '沙溪', x: 880, y: 250 },
+                { name: '冼村', x: 880, y: 450 },
+                { name: '磨碟沙', x: 880, y: 300, transfer: true }
+            ],
+            // 21号线
+            '21号线': [
+                { name: '员村', x: 1030, y: 500, transfer: true },
+                { name: '天河公园', x: 1080, y: 500 },
+                { name: '棠东', x: 1130, y: 500 },
+                { name: '大观南路', x: 1180, y: 500 },
+                { name: '天河智慧城', x: 1230, y: 500 },
+                { name: '神舟路', x: 1280, y: 500 },
+                { name: '科学城', x: 1330, y: 500 },
+                { name: '苏元', x: 1380, y: 500 },
+                { name: '水西', x: 1380, y: 550 },
+                { name: '长平', x: 1380, y: 600 },
+                { name: '金坑', x: 1380, y: 650 },
+                { name: '镇龙西', x: 1380, y: 700 },
+                { name: '镇龙', x: 1380, y: 750 },
+                { name: '中新', x: 1380, y: 800 },
+                { name: '坑贝', x: 1380, y: 850 },
+                { name: '凤岗', x: 1330, y: 850 },
+                { name: '朱村', x: 1280, y: 850 },
+                { name: '山田', x: 1230, y: 850 },
+                { name: '钟岗', x: 1180, y: 850 },
+                { name: '增城广场', x: 1130, y: 850 }
+            ],
+            // APM线
+            'APM线': [
+                { name: '林和西', x: 780, y: 450 },
+                { name: '体育中心南', x: 730, y: 500 },
+                { name: '天河南', x: 680, y: 500 },
+                { name: '黄埔大道', x: 630, y: 500 },
+                { name: '妇儿中心', x: 580, y: 500 },
+                { name: '花城大道', x: 530, y: 500 },
+                { name: '大剧院', x: 480, y: 500 },
+                { name: '海心沙', x: 430, y: 500 },
+                { name: '广州塔', x: 880, y: 450, transfer: true }
+            ],
+            // 广佛线
+            '广佛线': [
+                { name: '沥滘', x: 880, y: 300, transfer: true },
+                { name: '沙园', x: 330, y: 350, transfer: true },
+                { name: '鹤洞', x: 280, y: 350 },
+                { name: '菊树', x: 230, y: 350 },
+                { name: '龙溪', x: 180, y: 350 },
+                { name: '金融高新区', x: 130, y: 350 },
+                { name: '千灯湖', x: 80, y: 350 },
+                { name: '虫雷岗', x: 80, y: 400 },
+                { name: '南桂路', x: 80, y: 450 },
+                { name: '桂城', x: 80, y: 500 },
+                { name: '朝安', x: 80, y: 550 },
+                { name: '普君北路', x: 80, y: 600 },
+                { name: '祖庙', x: 80, y: 650 },
+                { name: '同济路', x: 80, y: 700 },
+                { name: '季华园', x: 80, y: 750 },
+                { name: '魁奇路', x: 80, y: 800 },
+                { name: '澜石', x: 80, y: 850 },
+                { name: '世纪莲', x: 80, y: 900 },
+                { name: '新城东', x: 130, y: 900 }
+            ]
+        };
+
+        // 状态变量
+        let broomMode = false;
+        let litStations = new Set();
+        let placedNames = [];
+        const mapContainer = document.getElementById('metro-map');
+        const tooltip = document.getElementById('tooltip');
+
+        function rectsOverlap(x1, y1, w1, h1, x2, y2, w2, h2) {
+            const padding = 2;
+            return !(x1 + w1 + padding < x2 || 
+                     x2 + w2 + padding < x1 || 
+                     y1 + h1 + padding < y2 || 
+                     y2 + h2 + padding < y1);
+        }
+
+        // 从本地存储加载已点亮的站点
+        function loadLitStations() {
+            const saved = localStorage.getItem('guangzhouMetroLitStations');
+            if (saved) {
+                litStations = new Set(JSON.parse(saved));
+            }
+        }
+
+        // 保存已点亮的站点到本地存储
+        function saveLitStations() {
+            localStorage.setItem('guangzhouMetroLitStations', JSON.stringify([...litStations]));
+        }
+
+        // 绘制地铁线路
+        function drawMetroLines() {
+            for (const [lineName, stations] of Object.entries(metroTopology)) {
+                const color = lineColors[lineName] || '#ffd700';
+                
+                // 绘制线路
+                const linePath = document.createElement('div');
+                linePath.className = 'line-path';
+                linePath.style.cssText = `
+                    position: absolute;
+                    pointer-events: none;
+                `;
+                mapContainer.appendChild(linePath);
+                
+                // 绘制SVG路径
+                let pathD = '';
+                stations.forEach((station, index) => {
+                    if (index === 0) {
+                        pathD += `M ${station.x} ${station.y}`;
+                    } else {
+                        pathD += ` L ${station.x} ${station.y}`;
+                    }
+                });
+                
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('width', '1400');
+                svg.setAttribute('height', '900');
+                svg.style.position = 'absolute';
+                svg.style.top = '0';
+                svg.style.left = '0';
+                svg.style.pointerEvents = 'none';
+                svg.style.zIndex = '2';
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathD);
+                path.setAttribute('stroke', color);
+                path.setAttribute('stroke-width', '8');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('opacity', '0.8');
+                
+                svg.appendChild(path);
+                mapContainer.appendChild(svg);
+                
+                // 添加线路名称标签
+                const lineLabel = document.createElement('div');
+                lineLabel.className = 'line-label';
+                lineLabel.textContent = lineName;
+                lineLabel.style.backgroundColor = color;
+                
+                const firstStation = stations[0];
+                const lastStation = stations[stations.length - 1];
+                
+                let labelX = firstStation.x;
+                let labelY = firstStation.y;
+                
+                if (firstStation.x > lastStation.x) {
+                    labelX = lastStation.x;
+                }
+                if (firstStation.y > lastStation.y) {
+                    labelY = lastStation.y;
+                }
+                
+                if (stations.length > 1) {
+                    const dx = stations[1].x - stations[0].x;
+                    const dy = stations[1].y - stations[0].y;
+                    
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        labelX = (firstStation.x + lastStation.x) / 2 - 30;
+                        labelY = firstStation.y - 18;
+                    } else {
+                        labelX = firstStation.x - 55;
+                        labelY = (firstStation.y + lastStation.y) / 2 - 8;
+                    }
+                }
+                
+                lineLabel.style.left = `${labelX}px`;
+                lineLabel.style.top = `${labelY}px`;
+                mapContainer.appendChild(lineLabel);
+            }
+        }
+
+        // 绘制站点
+        function drawStations() {
+            placedNames = [];
+            const allStations = new Map();
+            
+            // 收集所有站点，处理换乘站
+            for (const [lineName, stations] of Object.entries(metroTopology)) {
+                stations.forEach(station => {
+                    if (!allStations.has(station.name)) {
+                        allStations.set(station.name, {
+                            ...station,
+                            lines: [lineName]
+                        });
+                    } else {
+                        allStations.get(station.name).lines.push(lineName);
+                        allStations.get(station.name).transfer = true;
+                    }
+                });
+            }
+            
+            // 绘制站点
+            allStations.forEach((station, name) => {
+                const stationEl = document.createElement('div');
+                stationEl.className = 'station';
+                stationEl.dataset.name = name;
+                stationEl.dataset.lines = station.lines.join('/');
+                stationEl.style.left = `${station.x - 12}px`;
+                stationEl.style.top = `${station.y - 12}px`;
+                
+                if (station.transfer) {
+                    stationEl.classList.add('transfer');
+                    stationEl.style.left = `${station.x - 16}px`;
+                    stationEl.style.top = `${station.y - 16}px`;
+                }
+                
+                // 检查站点状态（根据记录数）
+                const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
+                if (recordCount >= 5) {
+                    stationEl.classList.add('snitch');
+                } else if (litStations.has(name) || recordCount > 0) {
+                    stationEl.classList.add('lit');
+                    if (!litStations.has(name) && recordCount > 0) {
+                        litStations.add(name);
+                    }
+                } else {
+                    stationEl.classList.add('fogged');
+                }
+                
+                // 悬停事件
+                stationEl.addEventListener('mouseenter', (e) => showTooltip(e, station));
+                stationEl.addEventListener('mouseleave', hideTooltip);
+                
+                // 站点名称（仅迷雾状态显示）
+                const nameEl = document.createElement('div');
+                nameEl.className = 'station-name';
+                nameEl.textContent = name;
+                nameEl.dataset.stationName = name;
+                
+                // 计算名称尺寸
+                const nameWidth = name.length * 13 + 12;
+                const nameHeight = 26;
+                
+                // 尝试多个位置避免重叠
+                const positions = [
+                    { left: station.x - nameWidth / 2, top: station.y - 35 },
+                    { left: station.x - nameWidth / 2, top: station.y + 22 },
+                    { left: station.x + 22, top: station.y - 8 },
+                    { left: station.x - nameWidth - 22, top: station.y - 8 },
+                    { left: station.x + 22, top: station.y - 30 },
+                    { left: station.x - nameWidth - 22, top: station.y - 30 },
+                    { left: station.x + 22, top: station.y + 15 },
+                    { left: station.x - nameWidth - 22, top: station.y + 15 },
+                ];
+                
+                let bestPos = positions[0];
+                let found = false;
+                
+                for (const pos of positions) {
+                    let overlaps = false;
+                    
+                    for (const placed of placedNames) {
+                        if (rectsOverlap(
+                            pos.left, pos.top, nameWidth, nameHeight,
+                            placed.left, placed.top, placed.width, placed.height
+                        )) {
+                            overlaps = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!overlaps && 
+                        pos.left >= 5 && pos.left + nameWidth <= 1395 &&
+                        pos.top >= 5 && pos.top + nameHeight <= 895) {
+                        bestPos = pos;
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    let minOverlap = Infinity;
+                    for (const pos of positions) {
+                        let overlapCount = 0;
+                        for (const placed of placedNames) {
+                            if (rectsOverlap(
+                                pos.left, pos.top, nameWidth, nameHeight,
+                                placed.left, placed.top, placed.width, placed.height
+                            )) {
+                                overlapCount++;
+                            }
+                        }
+                        if (overlapCount < minOverlap &&
+                            pos.left >= 5 && pos.left + nameWidth <= 1395 &&
+                            pos.top >= 5 && pos.top + nameHeight <= 895) {
+                            minOverlap = overlapCount;
+                            bestPos = pos;
+                        }
+                    }
+                }
+                
+                nameEl.style.left = `${bestPos.left}px`;
+                nameEl.style.top = `${bestPos.top}px`;
+                
+                placedNames.push({
+                    left: bestPos.left,
+                    top: bestPos.top,
+                    width: nameWidth,
+                    height: nameHeight
+                });
+                
+                mapContainer.appendChild(nameEl);
+                
+                if (litStations.has(name) || recordCount >= 5) {
+                    nameEl.style.display = 'none';
+                }
+                
+                // 点击事件
+                stationEl.addEventListener('click', () => handleStationClick(stationEl, name));
+                
+                mapContainer.appendChild(stationEl);
+            });
+            
+            updateStats();
+        }
+
+        // 显示提示框
+        function showTooltip(e, station) {
+            const recordCount = stationRecords[station.name] ? stationRecords[station.name].length : 0;
+            const isSnitch = recordCount >= 5;
+            const isLit = litStations.has(station.name) || recordCount > 0;
+            
+            let statusText = '🌫️ 迷雾覆盖';
+            if (isSnitch) {
+                statusText = '🌟 金色飞贼（传说级）';
+            } else if (isLit) {
+                statusText = '🧹 已点亮';
+            }
+            
+            tooltip.innerHTML = `
+                <div class="tooltip-title">🚇 ${station.name}</div>
+                <div class="tooltip-line">途经线路: ${station.lines.join('、')}</div>
+                <div class="tooltip-status">
+                    状态: ${statusText}
+                </div>
+                <div class="tooltip-status">
+                    到访次数: ${recordCount}次
+                </div>
+                ${broomMode ? '<div class="tooltip-status" style="color:#ffd700;">点击可点亮/取消</div>' : '<div class="tooltip-status" style="color:#90caf9;">点击查看详情</div>'}
+            `;
+            tooltip.style.left = `${e.clientX + 15}px`;
+            tooltip.style.top = `${e.clientY + 15}px`;
+            tooltip.classList.add('show');
+        }
+
+        // 隐藏提示框
+        function hideTooltip() {
+            tooltip.classList.remove('show');
+        }
+
+        // 处理站点点击
+        function handleStationClick(stationEl, name) {
+            if (broomMode) {
+                if (litStations.has(name)) {
+                    litStations.delete(name);
+                    stationEl.classList.remove('lit');
+                    stationEl.classList.add('fogged');
+                    // 显示站点名称
+                    const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
+                    if (nameEl) {
+                        nameEl.style.display = 'block';
+                    }
+                } else {
+                    litStations.add(name);
+                    stationEl.classList.add('lit');
+                    stationEl.classList.remove('fogged');
+                    // 隐藏站点名称
+                    const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
+                    if (nameEl) {
+                        nameEl.style.display = 'none';
+                    }
+                }
+                saveLitStations();
+                updateStats();
+            } else {
+                const allStations = new Map();
+                for (const [lineName, stations] of Object.entries(metroTopology)) {
+                    stations.forEach(station => {
+                        if (!allStations.has(station.name)) {
+                            allStations.set(station.name, {
+                                ...station,
+                                lines: [lineName]
+                            });
+                        } else {
+                            allStations.get(station.name).lines.push(lineName);
+                        }
+                    });
+                }
+                
+                const stationData = allStations.get(name);
+                openStationModal(name, stationData);
+            }
+        }
+
+        // 切换飞天扫把模式
+        function toggleBroomMode() {
+            broomMode = !broomMode;
+            const btn = document.getElementById('broomBtn');
+            if (broomMode) {
+                btn.classList.add('active');
+                btn.innerHTML = '🧹 快速点亮 (已激活)';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '🧹 快速点亮模式';
+            }
+        }
+
+        // 清除所有点亮
+        function clearAllLit() {
+            litStations.clear();
+            saveLitStations();
+            
+            document.querySelectorAll('.station').forEach(el => {
+                el.classList.remove('lit');
+                el.classList.add('fogged');
+            });
+            
+            updateStats();
+        }
+
+        // 点亮全部站点
+        function showAllStations() {
+            document.querySelectorAll('.station').forEach(el => {
+                const name = el.dataset.name;
+                litStations.add(name);
+                el.classList.add('lit');
+                el.classList.remove('fogged');
+            });
+            
+            saveLitStations();
+            updateStats();
+        }
+
+        // 重置地图
+        function resetMap() {
+            clearAllLit();
+            broomMode = false;
+            document.getElementById('broomBtn').classList.remove('active');
+            document.getElementById('broomBtn').innerHTML = '🧹 快速点亮模式';
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const total = document.querySelectorAll('.station').length;
+            const lit = litStations.size;
+            const fog = total - lit;
+            const progress = Math.round((lit / total) * 100);
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('litCount').textContent = lit;
+            document.getElementById('fogCount').textContent = fog;
+            document.getElementById('progress').textContent = `${progress}%`;
+        }
+
+        // 切换控制面板折叠/展开
+        function togglePanel() {
+            const panel = document.getElementById('controlPanel');
+            panel.classList.toggle('collapsed');
+            
+            const toggleBtn = panel.querySelector('.toggle-btn');
+            if (panel.classList.contains('collapsed')) {
+                toggleBtn.style.display = 'none';
+            } else {
+                toggleBtn.style.display = 'flex';
+            }
+            
+            localStorage.setItem('panelCollapsed', panel.classList.contains('collapsed'));
+        }
+
+        // 切换使用说明折叠/展开
+        function toggleInstructions() {
+            const panel = document.getElementById('instructionsPanel');
+            panel.classList.toggle('collapsed');
+            
+            const toggleBtn = panel.querySelector('.instructions-toggle');
+            if (panel.classList.contains('collapsed')) {
+                toggleBtn.style.display = 'none';
+            } else {
+                toggleBtn.style.display = 'flex';
+            }
+            
+            localStorage.setItem('instructionsCollapsed', panel.classList.contains('collapsed'));
+        }
+
+        // 初始化使用说明状态
+        function initInstructionsState() {
+            const collapsed = localStorage.getItem('instructionsCollapsed') === 'true';
+            const panel = document.getElementById('instructionsPanel');
+            
+            if (collapsed) {
+                panel.classList.add('collapsed');
+            }
+            
+            panel.addEventListener('click', function(e) {
+                if (panel.classList.contains('collapsed') && e.target === panel) {
+                    toggleInstructions();
+                }
+            });
+        }
+
+        // 缩放功能
+        let currentScale = 1;
+        const minScale = 0.5;
+        const maxScale = 3;
+        const scaleStep = 0.1;
+        
+        function initZoomControls() {
+            const map = document.getElementById('metro-map');
+            const wrapper = document.getElementById('metro-map-wrapper');
+            
+            // 鼠标滚轮缩放
+            wrapper.addEventListener('wheel', function(e) {
+                if (e.deltaY < 0) {
+                    zoomIn();
+                } else {
+                    zoomOut();
+                }
+            });
+        }
+        
+        function zoomIn() {
+            setScale(currentScale + scaleStep);
+        }
+        
+        function zoomOut() {
+            setScale(currentScale - scaleStep);
+        }
+        
+        function resetZoom() {
+            currentScale = 1;
+            updateMapTransform();
+        }
+        
+        function setScale(scale) {
+            currentScale = Math.min(Math.max(scale, minScale), maxScale);
+            updateMapTransform();
+        }
+        
+        function updateMapTransform() {
+            const map = document.getElementById('metro-map');
+            map.style.transform = `scale(${currentScale})`;
+        }
+
+        let stationRecords = {};
+        let currentStation = null;
+        let editingRecordId = null;
+
+        function loadStationRecords() {
+            const saved = localStorage.getItem('guangzhouMetroRecords');
+            if (saved) {
+                stationRecords = JSON.parse(saved);
+            }
+        }
+
+        function saveStationRecords() {
+            localStorage.setItem('guangzhouMetroRecords', JSON.stringify(stationRecords));
+        }
+
+        function getStationRecords(stationName) {
+            return stationRecords[stationName] || [];
+        }
+
+        function addStationRecord(stationName, record) {
+            if (!stationRecords[stationName]) {
+                stationRecords[stationName] = [];
+            }
+            stationRecords[stationName].push(record);
+            saveStationRecords();
+        }
+
+        function updateStationRecord(stationName, recordId, record) {
+            if (stationRecords[stationName]) {
+                const index = stationRecords[stationName].findIndex(r => r.id === recordId);
+                if (index !== -1) {
+                    stationRecords[stationName][index] = { ...stationRecords[stationName][index], ...record };
+                    saveStationRecords();
+                }
+            }
+        }
+
+        function deleteStationRecord(stationName, recordId) {
+            if (stationRecords[stationName]) {
+                stationRecords[stationName] = stationRecords[stationName].filter(r => r.id !== recordId);
+                if (stationRecords[stationName].length === 0) {
+                    delete stationRecords[stationName];
+                }
+                saveStationRecords();
+            }
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+        }
+
+        function openStationModal(stationName, stationData) {
+            currentStation = stationName;
+            const records = getStationRecords(stationName);
+            const modal = document.getElementById('stationModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            title.textContent = `🚇 ${stationName}`;
+            
+            const visitCount = records.length;
+            const companionSet = new Set();
+            records.forEach(r => {
+                if (r.companion) {
+                    r.companion.split(/[，,、\s]+/).forEach(c => {
+                        if (c.trim()) companionSet.add(c.trim());
+                    });
+                }
+            });
+
+            let recordsHtml = '';
+            if (records.length === 0) {
+                recordsHtml = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">还没有到访记录<br>点击下方按钮记录你的第一次吧！</div>
+                    </div>
+                `;
+            } else {
+                const sortedRecords = [...records].sort((a, b) => new Date(b.date) - new Date(a.date));
+                recordsHtml = sortedRecords.map(record => `
+                    <div class="record-item">
+                        <div class="record-date">📅 ${formatDate(record.date)}</div>
+                        ${record.companion ? `<div class="record-detail"><span class="record-detail-label">👥 同行:</span>${record.companion}</div>` : ''}
+                        ${record.activity ? `<div class="record-detail"><span class="record-detail-label">✨ 活动:</span>${record.activity}</div>` : ''}
+                        <div class="record-actions">
+                            <button class="record-btn record-btn-edit" onclick="editRecord('${record.id}')">✏️ 编辑</button>
+                            <button class="record-btn record-btn-delete" onclick="deleteRecord('${record.id}')">🗑️ 删除</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            body.innerHTML = `
+                <div class="modal-stats">
+                    <div class="stat-card">
+                        <div class="stat-card-number">${visitCount}</div>
+                        <div class="stat-card-label">到访次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-number">${companionSet.size}</div>
+                        <div class="stat-card-label">同行的人</div>
+                    </div>
+                </div>
+                <div class="record-detail" style="text-align:center;color:#61dafb;margin-bottom:15px;">
+                    🚇 途经线路: ${stationData.lines.join('、')}
+                </div>
+                <button class="add-record-btn" onclick="openAddRecordModal()">
+                    ➕ 添加到访记录
+                </button>
+                <div class="record-list">
+                    ${recordsHtml}
+                </div>
+            `;
+
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('stationModal').classList.remove('show');
+            currentStation = null;
+        }
+
+        function openAddRecordModal() {
+            editingRecordId = null;
+            const modal = document.getElementById('recordModal');
+            const title = document.getElementById('recordModalTitle');
+            const form = document.getElementById('recordForm');
+            
+            title.textContent = '📝 添加到访记录';
+            form.reset();
+            document.getElementById('recordDate').valueAsDate = new Date();
+            
+            modal.classList.add('show');
+        }
+
+        function editRecord(recordId) {
+            editingRecordId = recordId;
+            const records = getStationRecords(currentStation);
+            const record = records.find(r => r.id === recordId);
+            
+            if (record) {
+                const modal = document.getElementById('recordModal');
+                const title = document.getElementById('recordModalTitle');
+                
+                title.textContent = '✏️ 编辑记录';
+                document.getElementById('recordDate').value = record.date;
+                document.getElementById('recordCompanion').value = record.companion || '';
+                document.getElementById('recordActivity').value = record.activity || '';
+                
+                modal.classList.add('show');
+            }
+        }
+
+        function deleteRecord(recordId) {
+            if (confirm('确定要删除这条记录吗？')) {
+                deleteStationRecord(currentStation, recordId);
+                
+                updateStationVisualState(currentStation);
+                
+                const allStations = new Map();
+                for (const [lineName, stations] of Object.entries(metroTopology)) {
+                    stations.forEach(station => {
+                        if (!allStations.has(station.name)) {
+                            allStations.set(station.name, {
+                                ...station,
+                                lines: [lineName]
+                            });
+                        } else {
+                            allStations.get(station.name).lines.push(lineName);
+                        }
+                    });
+                }
+                openStationModal(currentStation, allStations.get(currentStation));
+                
+                updateStats();
+            }
+        }
+
+        function updateStationVisualState(stationName) {
+            const stationEl = document.querySelector(`.station[data-name="${stationName}"]`);
+            const nameEl = document.querySelector(`.station-name[data-station-name="${stationName}"]`);
+            const recordCount = stationRecords[stationName] ? stationRecords[stationName].length : 0;
+            
+            if (!stationEl) return;
+            
+            stationEl.classList.remove('fogged', 'lit', 'snitch');
+            
+            if (recordCount >= 5) {
+                stationEl.classList.add('snitch');
+                litStations.add(stationName);
+                if (nameEl) nameEl.style.display = 'none';
+            } else if (recordCount > 0 || litStations.has(stationName)) {
+                stationEl.classList.add('lit');
+                litStations.add(stationName);
+                if (nameEl) nameEl.style.display = 'none';
+            } else {
+                stationEl.classList.add('fogged');
+                litStations.delete(stationName);
+                if (nameEl) nameEl.style.display = '';
+            }
+            
+            saveLitStations();
+        }
+
+        function closeRecordModal() {
+            document.getElementById('recordModal').classList.remove('show');
+            editingRecordId = null;
+        }
+
+        function saveRecord(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('recordDate').value;
+            const companion = document.getElementById('recordCompanion').value.trim();
+            const activity = document.getElementById('recordActivity').value.trim();
+            
+            if (!date) {
+                alert('请选择到访日期');
+                return;
+            }
+            
+            if (editingRecordId) {
+                updateStationRecord(currentStation, editingRecordId, { date, companion, activity });
+            } else {
+                const newRecord = {
+                    id: Date.now().toString(),
+                    date,
+                    companion,
+                    activity
+                };
+                addStationRecord(currentStation, newRecord);
+            }
+            
+            updateStationVisualState(currentStation);
+            updateStats();
+            
+            closeRecordModal();
+            
+            const allStations = new Map();
+            for (const [lineName, stations] of Object.entries(metroTopology)) {
+                stations.forEach(station => {
+                    if (!allStations.has(station.name)) {
+                        allStations.set(station.name, {
+                            ...station,
+                            lines: [lineName]
+                        });
+                    } else {
+                        allStations.get(station.name).lines.push(lineName);
+                    }
+                });
+            }
+            openStationModal(currentStation, allStations.get(currentStation));
+        }
+
+        // 初始化面板状态
+        function initPanelState() {
+            const collapsed = localStorage.getItem('panelCollapsed') === 'true';
+            const panel = document.getElementById('controlPanel');
+            const toggleBtn = panel.querySelector('.toggle-btn');
+            
+            if (collapsed) {
+                panel.classList.add('collapsed');
+                toggleBtn.style.display = 'none';
+            }
+            
+            panel.addEventListener('click', function(e) {
+                if (panel.classList.contains('collapsed') && e.target === panel) {
+                    togglePanel();
+                }
+            });
+        }
+
+        // 初始化
+        function init() {
+            loadLitStations();
+            loadStationRecords();
+            drawMetroLines();
+            drawStations();
+            initPanelState();
+            initInstructionsState();
+            initZoomControls();
+            
+            document.getElementById('recordForm').addEventListener('submit', saveRecord);
+            
+            document.getElementById('stationModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            document.getElementById('recordModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeRecordModal();
+                }
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
