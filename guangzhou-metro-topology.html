@@ -391,8 +391,8 @@
         
         #metro-map {
             position: relative;
-            width: 1400px;
-            height: 900px;
+            width: 2600px;
+            height: 1800px;
             margin: 0 auto;
             background: rgba(15, 25, 45, 0.95);
             transform-origin: center center;
@@ -456,7 +456,7 @@
             background: #fff;
             border: 3px solid #333;
             cursor: pointer;
-            z-index: 10;
+            z-index: 50;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -583,7 +583,7 @@
             color: #ffffff;
             white-space: nowrap;
             pointer-events: none;
-            z-index: 10;
+            z-index: 20;
             font-weight: bold;
             text-shadow: 
                 -1px -1px 0 #000,  
@@ -1203,296 +1203,297 @@
             '11号线': '#FF6B6B'
         };
 
-        // 拓扑图站点坐标（经典横平竖直布局）
+        // 拓扑图站点坐标（优化布局，增加站点间距避免名称堆叠）
         const metroTopology = {
             // 1号线 - 水平主线（西向东）
             '1号线': [
-                { name: '西朗', x: 80, y: 450 },
-                { name: '坑口', x: 130, y: 450 },
-                { name: '花地湾', x: 180, y: 450 },
-                { name: '芳村', x: 230, y: 450 },
-                { name: '黄沙', x: 280, y: 450 },
-                { name: '陈家祠', x: 330, y: 450 },
-                { name: '西门口', x: 380, y: 450 },
-                { name: '公园前', x: 430, y: 450 },
-                { name: '农讲所', x: 480, y: 450 },
-                { name: '烈士陵园', x: 530, y: 450 },
-                { name: '东山口', x: 580, y: 450 },
-                { name: '杨箕', x: 630, y: 450 },
-                { name: '体育西路', x: 680, y: 450 },
-                { name: '体育中心', x: 730, y: 450 },
-                { name: '广州东站', x: 780, y: 450 }
+                { name: '西朗', x: 100, y: 500 },
+                { name: '坑口', x: 220, y: 500 },
+                { name: '花地湾', x: 340, y: 500 },
+                { name: '芳村', x: 460, y: 500 },
+                { name: '黄沙', x: 580, y: 500 },
+                { name: '陈家祠', x: 700, y: 500 },
+                { name: '西门口', x: 820, y: 500 },
+                { name: '公园前', x: 940, y: 500 },
+                { name: '农讲所', x: 1060, y: 500 },
+                { name: '烈士陵园', x: 1180, y: 500 },
+                { name: '东山口', x: 1300, y: 500 },
+                { name: '杨箕', x: 1420, y: 500 },
+                { name: '体育西路', x: 1540, y: 500 },
+                { name: '体育中心', x: 1660, y: 500 },
+                { name: '广州东站', x: 1780, y: 500 }
             ],
             // 2号线 - 南北主线
             '2号线': [
-                { name: '广州南站', x: 430, y: 50 },
-                { name: '石壁', x: 430, y: 100 },
-                { name: '会江', x: 430, y: 150 },
-                { name: '南浦', x: 430, y: 200 },
-                { name: '洛溪', x: 430, y: 250 },
-                { name: '南洲', x: 430, y: 300 },
-                { name: '东晓南', x: 430, y: 350 },
-                { name: '江泰路', x: 430, y: 400 },
-                { name: '昌岗', x: 430, y: 420 },
-                { name: '江南西', x: 430, y: 480 },
-                { name: '市二宫', x: 430, y: 530 },
-                { name: '海珠广场', x: 430, y: 580 },
-                { name: '公园前', x: 430, y: 450, transfer: true },
-                { name: '越秀公园', x: 430, y: 650 },
-                { name: '广州火车站', x: 430, y: 700 },
-                { name: '三元里', x: 430, y: 750 },
-                { name: '飞翔公园', x: 430, y: 800 },
-                { name: '白云公园', x: 480, y: 800 },
-                { name: '萧岗', x: 530, y: 800 },
-                { name: '江夏', x: 580, y: 800 },
-                { name: '黄边', x: 630, y: 800 },
-                { name: '嘉禾望岗', x: 680, y: 800, transfer: true }
+                { name: '广州南站', x: 800, y: 80 },
+                { name: '石壁', x: 800, y: 200 },
+                { name: '会江', x: 800, y: 320 },
+                { name: '南浦', x: 800, y: 440 },
+                { name: '洛溪', x: 800, y: 560 },
+                { name: '南洲', x: 800, y: 680 },
+                { name: '东晓南', x: 800, y: 800 },
+                { name: '江泰路', x: 800, y: 920 },
+                { name: '昌岗', x: 800, y: 1040 },
+                { name: '江南西', x: 800, y: 1160 },
+                { name: '市二宫', x: 800, y: 1280 },
+                { name: '海珠广场', x: 800, y: 1400 },
+                { name: '公园前', x: 940, y: 500, transfer: true },
+                { name: '越秀公园', x: 800, y: 1520 },
+                { name: '广州火车站', x: 800, y: 1640 },
+                { name: '三元里', x: 800, y: 1760 },
+                { name: '飞翔公园', x: 920, y: 1760 },
+                { name: '白云公园', x: 1040, y: 1760 },
+                { name: '萧岗', x: 1160, y: 1760 },
+                { name: '江夏', x: 1280, y: 1760 },
+                { name: '黄边', x: 1400, y: 1760 },
+                { name: '嘉禾望岗', x: 1520, y: 1760, transfer: true }
             ],
             // 3号线 - 南北主线（天河-番禺）
             '3号线': [
-                { name: '番禺广场', x: 880, y: 50 },
-                { name: '市桥', x: 880, y: 100 },
-                { name: '汉溪长隆', x: 880, y: 150 },
-                { name: '大石', x: 880, y: 200 },
-                { name: '厦滘', x: 880, y: 250 },
-                { name: '沥滘', x: 880, y: 300 },
-                { name: '大塘', x: 880, y: 350 },
-                { name: '客村', x: 880, y: 400 },
-                { name: '广州塔', x: 880, y: 450 },
-                { name: '珠江新城', x: 880, y: 500 },
-                { name: '体育西路', x: 680, y: 450, transfer: true },
-                { name: '石牌桥', x: 730, y: 500 },
-                { name: '岗顶', x: 780, y: 500 },
-                { name: '华师', x: 830, y: 500 },
-                { name: '五山', x: 880, y: 500 },
-                { name: '天河客运站', x: 930, y: 500 }
+                { name: '番禺广场', x: 2000, y: 80 },
+                { name: '市桥', x: 2000, y: 200 },
+                { name: '汉溪长隆', x: 2000, y: 320 },
+                { name: '大石', x: 2000, y: 440 },
+                { name: '厦滘', x: 2000, y: 560 },
+                { name: '沥滘', x: 2000, y: 680 },
+                { name: '大塘', x: 2000, y: 800 },
+                { name: '客村', x: 2000, y: 920 },
+                { name: '广州塔', x: 2000, y: 1040 },
+                { name: '珠江新城', x: 2000, y: 1160 },
+                { name: '体育西路', x: 1540, y: 500, transfer: true },
+                { name: '石牌桥', x: 1660, y: 620 },
+                { name: '岗顶', x: 1780, y: 620 },
+                { name: '华师', x: 1900, y: 620 },
+                { name: '五山', x: 2020, y: 620 },
+                { name: '天河客运站', x: 2140, y: 620 }
             ],
             // 3号线北延段
             '3号线北延段': [
-                { name: '嘉禾望岗', x: 680, y: 800, transfer: true },
-                { name: '白云机场北', x: 680, y: 850 }
+                { name: '嘉禾望岗', x: 1520, y: 1760, transfer: true },
+                { name: '白云机场北', x: 1520, y: 1880 }
             ],
             // 4号线 - 南沙线
             '4号线': [
-                { name: '南沙客运港', x: 50, y: 100 },
-                { name: '黄阁汽车城', x: 100, y: 100 },
-                { name: '黄阁', x: 150, y: 100 },
-                { name: '蕉门', x: 200, y: 100 },
-                { name: '金洲', x: 250, y: 150 },
-                { name: '飞沙角', x: 300, y: 150 },
-                { name: '广隆', x: 350, y: 150 },
-                { name: '大涌', x: 400, y: 150 },
-                { name: '塘坑', x: 450, y: 150 },
-                { name: '南横', x: 500, y: 150 },
-                { name: '万胜围', x: 550, y: 200 },
-                { name: '官洲', x: 550, y: 250 },
-                { name: '大学城北', x: 550, y: 300 },
-                { name: '大学城南', x: 550, y: 350 },
-                { name: '新造', x: 550, y: 400 },
-                { name: '石碁', x: 550, y: 450 },
-                { name: '车陂南', x: 550, y: 500 },
-                { name: '车陂', x: 550, y: 550 },
-                { name: '黄村', x: 550, y: 600 }
+                { name: '南沙客运港', x: 100, y: 100 },
+                { name: '黄阁汽车城', x: 220, y: 100 },
+                { name: '黄阁', x: 340, y: 100 },
+                { name: '蕉门', x: 460, y: 100 },
+                { name: '金洲', x: 580, y: 220 },
+                { name: '飞沙角', x: 700, y: 220 },
+                { name: '广隆', x: 820, y: 220 },
+                { name: '大涌', x: 940, y: 220 },
+                { name: '塘坑', x: 1060, y: 220 },
+                { name: '南横', x: 1180, y: 220 },
+                { name: '万胜围', x: 1300, y: 340 },
+                { name: '官洲', x: 1300, y: 460 },
+                { name: '大学城北', x: 1300, y: 580 },
+                { name: '大学城南', x: 1300, y: 700 },
+                { name: '新造', x: 1300, y: 820 },
+                { name: '石碁', x: 1300, y: 940 },
+                { name: '车陂南', x: 1300, y: 1060 },
+                { name: '车陂', x: 1300, y: 1180 },
+                { name: '黄村', x: 1300, y: 1300 }
             ],
             // 5号线 - 东西线
             '5号线': [
-                { name: '滘口', x: 80, y: 700 },
-                { name: '坦尾', x: 130, y: 700 },
-                { name: '中山八', x: 180, y: 700 },
-                { name: '西场', x: 230, y: 700 },
-                { name: '西村', x: 280, y: 700 },
-                { name: '广州火车站', x: 430, y: 700, transfer: true },
-                { name: '小北', x: 480, y: 700 },
-                { name: '淘金', x: 530, y: 700 },
-                { name: '区庄', x: 580, y: 700 },
-                { name: '动物园', x: 630, y: 700 },
-                { name: '五羊邨', x: 680, y: 700 },
-                { name: '珠江新城', x: 880, y: 500, transfer: true },
-                { name: '猎德', x: 930, y: 500 },
-                { name: '潭村', x: 980, y: 500 },
-                { name: '员村', x: 1030, y: 500 },
-                { name: '科韵路', x: 1080, y: 500 },
-                { name: '车陂南', x: 550, y: 500, transfer: true },
-                { name: '东圃', x: 550, y: 650 },
-                { name: '三溪', x: 550, y: 700 },
-                { name: '鱼珠', x: 550, y: 750 },
-                { name: '大沙地', x: 550, y: 800 },
-                { name: '大沙东', x: 550, y: 850 },
-                { name: '文冲', x: 550, y: 900 }
+                { name: '滘口', x: 100, y: 1200 },
+                { name: '坦尾', x: 220, y: 1200 },
+                { name: '中山八', x: 340, y: 1200 },
+                { name: '西场', x: 460, y: 1200 },
+                { name: '西村', x: 580, y: 1200 },
+                { name: '广州火车站', x: 800, y: 1640, transfer: true },
+                { name: '小北', x: 700, y: 1200 },
+                { name: '淘金', x: 820, y: 1200 },
+                { name: '区庄', x: 940, y: 1200 },
+                { name: '动物园', x: 1060, y: 1200 },
+                { name: '五羊邨', x: 1180, y: 1200 },
+                { name: '珠江新城', x: 2000, y: 1160, transfer: true },
+                { name: '猎德', x: 2120, y: 1160 },
+                { name: '潭村', x: 2240, y: 1160 },
+                { name: '员村', x: 2360, y: 1160 },
+                { name: '科韵路', x: 2480, y: 1160 },
+                { name: '车陂南', x: 1300, y: 1060, transfer: true },
+                { name: '东圃', x: 1300, y: 1200 },
+                { name: '三溪', x: 1300, y: 1320 },
+                { name: '鱼珠', x: 1300, y: 1440 },
+                { name: '大沙地', x: 1300, y: 1560 },
+                { name: '大沙东', x: 1300, y: 1680 },
+                { name: '文冲', x: 1300, y: 1800 }
             ],
             // 6号线 - 东西线
             '6号线': [
-                { name: '浔峰岗', x: 80, y: 550 },
-                { name: '横沙', x: 130, y: 550 },
-                { name: '沙贝', x: 180, y: 550 },
-                { name: '河沙', x: 230, y: 550 },
-                { name: '如意坊', x: 280, y: 550 },
-                { name: '黄沙', x: 280, y: 450, transfer: true },
-                { name: '文化公园', x: 330, y: 550 },
-                { name: '一德路', x: 380, y: 550 },
-                { name: '海珠广场', x: 430, y: 580, transfer: true },
-                { name: '北京路', x: 480, y: 550 },
-                { name: '团一大广场', x: 530, y: 550 },
-                { name: '东山口', x: 580, y: 450, transfer: true },
-                { name: '区庄', x: 580, y: 700, transfer: true },
-                { name: '黄花岗', x: 630, y: 550 },
-                { name: '沙河顶', x: 680, y: 550 },
-                { name: '沙河', x: 730, y: 550 },
-                { name: '天平架', x: 780, y: 550 },
-                { name: '燕塘', x: 830, y: 550 },
-                { name: '天河客运站', x: 930, y: 500, transfer: true },
-                { name: '长湴', x: 980, y: 550 },
-                { name: '植物园', x: 1030, y: 550 },
-                { name: '龙洞', x: 1080, y: 550 },
-                { name: '柯木塱', x: 1130, y: 550 },
-                { name: '高塘石', x: 1180, y: 550 }
+                { name: '浔峰岗', x: 100, y: 700 },
+                { name: '横沙', x: 220, y: 700 },
+                { name: '沙贝', x: 340, y: 700 },
+                { name: '河沙', x: 460, y: 700 },
+                { name: '如意坊', x: 580, y: 700 },
+                { name: '黄沙', x: 580, y: 500, transfer: true },
+                { name: '文化公园', x: 700, y: 700 },
+                { name: '一德路', x: 820, y: 700 },
+                { name: '海珠广场', x: 800, y: 1400, transfer: true },
+                { name: '北京路', x: 940, y: 700 },
+                { name: '团一大广场', x: 1060, y: 700 },
+                { name: '东山口', x: 1300, y: 500, transfer: true },
+                { name: '区庄', x: 940, y: 1200, transfer: true },
+                { name: '黄花岗', x: 1180, y: 700 },
+                { name: '沙河顶', x: 1300, y: 700 },
+                { name: '沙河', x: 1420, y: 700 },
+                { name: '天平架', x: 1540, y: 700 },
+                { name: '燕塘', x: 1660, y: 700 },
+                { name: '天河客运站', x: 2140, y: 620, transfer: true },
+                { name: '长湴', x: 1780, y: 700 },
+                { name: '植物园', x: 1900, y: 700 },
+                { name: '龙洞', x: 2020, y: 700 },
+                { name: '柯木塱', x: 2140, y: 700 },
+                { name: '高塘石', x: 2260, y: 700 }
             ],
             // 7号线
             '7号线': [
-                { name: '美的大道', x: 200, y: 200 },
-                { name: '北滘公园', x: 250, y: 200 },
-                { name: '南涌', x: 300, y: 200 },
-                { name: '陈村', x: 350, y: 200 },
-                { name: '锦龙', x: 400, y: 200 },
-                { name: '大洲', x: 450, y: 200 },
-                { name: '广州南站', x: 430, y: 50, transfer: true },
-                { name: '谢村', x: 480, y: 100 },
-                { name: '石壁', x: 430, y: 100, transfer: true },
-                { name: '钟村', x: 530, y: 100 },
-                { name: '汉溪长隆', x: 880, y: 150, transfer: true },
-                { name: '南村万博', x: 880, y: 200 },
-                { name: '员岗', x: 880, y: 250 },
-                { name: '板桥', x: 880, y: 300 },
-                { name: '万胜围', x: 550, y: 200, transfer: true }
+                { name: '美的大道', x: 200, y: 300 },
+                { name: '北滘公园', x: 320, y: 300 },
+                { name: '南涌', x: 440, y: 300 },
+                { name: '陈村', x: 560, y: 300 },
+                { name: '锦龙', x: 680, y: 300 },
+                { name: '大洲', x: 800, y: 300 },
+                { name: '广州南站', x: 800, y: 80, transfer: true },
+                { name: '谢村', x: 860, y: 200 },
+                { name: '石壁', x: 800, y: 200, transfer: true },
+                { name: '钟村', x: 920, y: 200 },
+                { name: '汉溪长隆', x: 2000, y: 320, transfer: true },
+                { name: '南村万博', x: 2000, y: 440 },
+                { name: '员岗', x: 2000, y: 560 },
+                { name: '板桥', x: 2000, y: 680 },
+                { name: '万胜围', x: 1300, y: 340, transfer: true }
             ],
             // 8号线
             '8号线': [
-                { name: '凤凰新村', x: 280, y: 350 },
-                { name: '沙园', x: 330, y: 350 },
-                { name: '宝岗大道', x: 380, y: 350 },
-                { name: '昌岗', x: 430, y: 420, transfer: true },
-                { name: '晓港', x: 480, y: 350 },
-                { name: '中大', x: 530, y: 350 },
-                { name: '鹭江', x: 580, y: 350 },
-                { name: '客村', x: 880, y: 400, transfer: true },
-                { name: '赤岗', x: 880, y: 350 },
-                { name: '磨碟沙', x: 880, y: 300 },
-                { name: '新港东', x: 880, y: 250 },
-                { name: '琶洲', x: 880, y: 200 },
-                { name: '万胜围', x: 550, y: 200, transfer: true }
+                { name: '凤凰新村', x: 460, y: 400 },
+                { name: '沙园', x: 580, y: 400 },
+                { name: '宝岗大道', x: 700, y: 400 },
+                { name: '昌岗', x: 800, y: 1040, transfer: true },
+                { name: '晓港', x: 820, y: 400 },
+                { name: '中大', x: 940, y: 400 },
+                { name: '鹭江', x: 1060, y: 400 },
+                { name: '客村', x: 2000, y: 920, transfer: true },
+                { name: '赤岗', x: 2000, y: 800 },
+                { name: '磨碟沙', x: 2000, y: 680 },
+                { name: '新港东', x: 2000, y: 560 },
+                { name: '琶洲', x: 2000, y: 440 },
+                { name: '万胜围', x: 1300, y: 340, transfer: true }
             ],
             // 9号线
             '9号线': [
-                { name: '飞鹅岭', x: 100, y: 850 },
-                { name: '花都汽车城', x: 150, y: 850 },
-                { name: '花城路', x: 200, y: 850 },
-                { name: '花果山公园', x: 250, y: 850 },
-                { name: '花都广场', x: 300, y: 850 },
-                { name: '马鞍山公园', x: 350, y: 850 },
-                { name: '莲塘', x: 400, y: 850 },
-                { name: '清布', x: 450, y: 850 },
-                { name: '广州北站', x: 500, y: 850 }
+                { name: '飞鹅岭', x: 100, y: 1500 },
+                { name: '花都汽车城', x: 220, y: 1500 },
+                { name: '花城路', x: 340, y: 1500 },
+                { name: '花果山公园', x: 460, y: 1500 },
+                { name: '花都广场', x: 580, y: 1500 },
+                { name: '马鞍山公园', x: 700, y: 1500 },
+                { name: '莲塘', x: 820, y: 1500 },
+                { name: '清布', x: 940, y: 1500 },
+                { name: '广州北站', x: 1060, y: 1500 }
             ],
             // 13号线
             '13号线': [
-                { name: '鱼珠', x: 550, y: 750, transfer: true },
-                { name: '裕丰围', x: 600, y: 750 },
-                { name: '大沙东', x: 550, y: 850, transfer: true },
-                { name: '夏园', x: 650, y: 750 },
-                { name: '南岗', x: 700, y: 750 },
-                { name: '白江', x: 750, y: 750 },
-                { name: '沙村', x: 800, y: 750 },
-                { name: '新塘', x: 850, y: 750 },
-                { name: '新沙', x: 900, y: 750 }
+                { name: '鱼珠', x: 1300, y: 1440, transfer: true },
+                { name: '裕丰围', x: 1420, y: 1440 },
+                { name: '大沙东', x: 1300, y: 1680, transfer: true },
+                { name: '夏园', x: 1540, y: 1440 },
+                { name: '南岗', x: 1660, y: 1440 },
+                { name: '白江', x: 1780, y: 1440 },
+                { name: '沙村', x: 1900, y: 1440 },
+                { name: '新塘', x: 2020, y: 1440 },
+                { name: '新沙', x: 2140, y: 1440 }
             ],
             // 14号线
             '14号线': [
-                { name: '嘉禾望岗', x: 680, y: 800, transfer: true },
-                { name: '白云东平', x: 730, y: 800 },
-                { name: '夏良', x: 780, y: 800 },
-                { name: '太和', x: 830, y: 800 },
-                { name: '竹料', x: 880, y: 800 },
-                { name: '钟落潭', x: 930, y: 800 },
-                { name: '马沥', x: 980, y: 800 },
-                { name: '新和', x: 1030, y: 800 },
-                { name: '太平', x: 1080, y: 800 },
-                { name: '神岗', x: 1130, y: 800 },
-                { name: '赤草', x: 1180, y: 800 },
-                { name: '从化客运站', x: 1230, y: 800 },
-                { name: '东风', x: 1280, y: 800 }
+                { name: '嘉禾望岗', x: 1520, y: 1760, transfer: true },
+                { name: '白云东平', x: 1640, y: 1760 },
+                { name: '夏良', x: 1760, y: 1760 },
+                { name: '太和', x: 1880, y: 1760 },
+                { name: '竹料', x: 2000, y: 1760 },
+                { name: '钟落潭', x: 2120, y: 1760 },
+                { name: '马沥', x: 2240, y: 1760 },
+                { name: '新和', x: 2360, y: 1760 },
+                { name: '太平', x: 2480, y: 1760 },
+                { name: '神岗', x: 2500, y: 1760 },
+                { name: '赤草', x: 2500, y: 1640 },
+                { name: '从化客运站', x: 2500, y: 1520 },
+                { name: '东风', x: 2500, y: 1400 }
             ],
             // 18号线
             '18号线': [
-                { name: '万顷沙', x: 50, y: 50 },
-                { name: '横沥', x: 100, y: 50 },
-                { name: '番禺广场', x: 880, y: 50, transfer: true },
-                { name: '南村万博', x: 880, y: 200, transfer: true },
-                { name: '沙溪', x: 880, y: 250 },
-                { name: '冼村', x: 880, y: 450 },
-                { name: '磨碟沙', x: 880, y: 300, transfer: true }
+                { name: '万顷沙', x: 100, y: 100 },
+                { name: '横沥', x: 220, y: 100 },
+                { name: '番禺广场', x: 2000, y: 80, transfer: true },
+                { name: '南村万博', x: 2000, y: 440, transfer: true },
+                { name: '沙溪', x: 2000, y: 560 },
+                { name: '冼村', x: 2000, y: 920 },
+                { name: '磨碟沙', x: 2000, y: 680, transfer: true }
             ],
             // 21号线
             '21号线': [
-                { name: '员村', x: 1030, y: 500, transfer: true },
-                { name: '天河公园', x: 1080, y: 500 },
-                { name: '棠东', x: 1130, y: 500 },
-                { name: '大观南路', x: 1180, y: 500 },
-                { name: '天河智慧城', x: 1230, y: 500 },
-                { name: '神舟路', x: 1280, y: 500 },
-                { name: '科学城', x: 1330, y: 500 },
-                { name: '苏元', x: 1380, y: 500 },
-                { name: '水西', x: 1380, y: 550 },
-                { name: '长平', x: 1380, y: 600 },
-                { name: '金坑', x: 1380, y: 650 },
-                { name: '镇龙西', x: 1380, y: 700 },
-                { name: '镇龙', x: 1380, y: 750 },
-                { name: '中新', x: 1380, y: 800 },
-                { name: '坑贝', x: 1380, y: 850 },
-                { name: '凤岗', x: 1330, y: 850 },
-                { name: '朱村', x: 1280, y: 850 },
-                { name: '山田', x: 1230, y: 850 },
-                { name: '钟岗', x: 1180, y: 850 },
-                { name: '增城广场', x: 1130, y: 850 }
+                { name: '员村', x: 2360, y: 1160, transfer: true },
+                { name: '天河公园', x: 2360, y: 1040 },
+                { name: '棠东', x: 2360, y: 920 },
+                { name: '大观南路', x: 2360, y: 800 },
+                { name: '天河智慧城', x: 2360, y: 680 },
+                { name: '神舟路', x: 2360, y: 560 },
+                { name: '科学城', x: 2360, y: 440 },
+                { name: '苏元', x: 2360, y: 320 },
+                { name: '水西', x: 2240, y: 320 },
+                { name: '长平', x: 2000, y: 320 },
+                { name: '金坑', x: 1880, y: 320 },
+                { name: '镇龙西', x: 1760, y: 320 },
+                { name: '镇龙', x: 1640, y: 320 },
+                { name: '中新', x: 1520, y: 320 },
+                { name: '坑贝', x: 1400, y: 320 },
+                { name: '凤岗', x: 1280, y: 320 },
+                { name: '朱村', x: 1160, y: 320 },
+                { name: '山田', x: 1040, y: 320 },
+                { name: '钟岗', x: 920, y: 320 },
+                { name: '增城广场', x: 800, y: 320 }
             ],
             // APM线
             'APM线': [
-                { name: '林和西', x: 780, y: 450 },
-                { name: '体育中心南', x: 730, y: 500 },
-                { name: '天河南', x: 680, y: 500 },
-                { name: '黄埔大道', x: 630, y: 500 },
-                { name: '妇儿中心', x: 580, y: 500 },
-                { name: '花城大道', x: 530, y: 500 },
-                { name: '大剧院', x: 480, y: 500 },
-                { name: '海心沙', x: 430, y: 500 },
-                { name: '广州塔', x: 880, y: 450, transfer: true }
+                { name: '林和西', x: 1780, y: 500 },
+                { name: '体育中心南', x: 1660, y: 620 },
+                { name: '天河南', x: 1540, y: 620 },
+                { name: '黄埔大道', x: 1420, y: 620 },
+                { name: '妇儿中心', x: 1300, y: 620 },
+                { name: '花城大道', x: 1180, y: 620 },
+                { name: '大剧院', x: 1060, y: 620 },
+                { name: '海心沙', x: 940, y: 620 },
+                { name: '广州塔', x: 2000, y: 1040, transfer: true }
             ],
             // 广佛线
             '广佛线': [
-                { name: '沥滘', x: 880, y: 300, transfer: true },
-                { name: '沙园', x: 330, y: 350, transfer: true },
-                { name: '鹤洞', x: 280, y: 350 },
-                { name: '菊树', x: 230, y: 350 },
-                { name: '龙溪', x: 180, y: 350 },
-                { name: '金融高新区', x: 130, y: 350 },
-                { name: '千灯湖', x: 80, y: 350 },
-                { name: '虫雷岗', x: 80, y: 400 },
-                { name: '南桂路', x: 80, y: 450 },
-                { name: '桂城', x: 80, y: 500 },
-                { name: '朝安', x: 80, y: 550 },
-                { name: '普君北路', x: 80, y: 600 },
-                { name: '祖庙', x: 80, y: 650 },
-                { name: '同济路', x: 80, y: 700 },
-                { name: '季华园', x: 80, y: 750 },
-                { name: '魁奇路', x: 80, y: 800 },
-                { name: '澜石', x: 80, y: 850 },
-                { name: '世纪莲', x: 80, y: 900 },
-                { name: '新城东', x: 130, y: 900 }
+                { name: '沥滘', x: 2000, y: 680, transfer: true },
+                { name: '沙园', x: 580, y: 400, transfer: true },
+                { name: '鹤洞', x: 460, y: 400 },
+                { name: '菊树', x: 340, y: 400 },
+                { name: '龙溪', x: 220, y: 400 },
+                { name: '金融高新区', x: 100, y: 400 },
+                { name: '千灯湖', x: 100, y: 520 },
+                { name: '虫雷岗', x: 100, y: 640 },
+                { name: '南桂路', x: 100, y: 760 },
+                { name: '桂城', x: 100, y: 880 },
+                { name: '朝安', x: 100, y: 1000 },
+                { name: '普君北路', x: 100, y: 1120 },
+                { name: '祖庙', x: 100, y: 1240 },
+                { name: '同济路', x: 100, y: 1300 },
+                { name: '季华园', x: 220, y: 1300 },
+                { name: '魁奇路', x: 100, y: 1360 },
+                { name: '澜石', x: 100, y: 1480 },
+                { name: '世纪莲', x: 100, y: 1600 },
+                { name: '新城东', x: 220, y: 1600 }
             ]
         };
 
         // 状态变量
         let broomMode = false;
         let litStations = new Set();
+        let unlitStations = new Set();
         let placedNames = [];
         const mapContainer = document.getElementById('metro-map');
         const tooltip = document.getElementById('tooltip');
@@ -1516,6 +1517,19 @@
         // 保存已点亮的站点到本地存储
         function saveLitStations() {
             localStorage.setItem('guangzhouMetroLitStations', JSON.stringify([...litStations]));
+        }
+
+        // 从本地存储加载已手动取消点亮的站点
+        function loadUnlitStations() {
+            const saved = localStorage.getItem('guangzhouMetroUnlitStations');
+            if (saved) {
+                unlitStations = new Set(JSON.parse(saved));
+            }
+        }
+
+        // 保存已手动取消点亮的站点到本地存储
+        function saveUnlitStations() {
+            localStorage.setItem('guangzhouMetroUnlitStations', JSON.stringify([...unlitStations]));
         }
 
         // 绘制地铁线路
@@ -1543,8 +1557,8 @@
                 });
                 
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.setAttribute('width', '1400');
-                svg.setAttribute('height', '900');
+                svg.setAttribute('width', '2600');
+                svg.setAttribute('height', '1800');
                 svg.style.position = 'absolute';
                 svg.style.top = '0';
                 svg.style.left = '0';
@@ -1638,9 +1652,9 @@
                 
                 // 检查站点状态（根据记录数）
                 const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
-                if (recordCount >= 5) {
+                if (recordCount >= 5 && !unlitStations.has(name)) {
                     stationEl.classList.add('snitch');
-                } else if (litStations.has(name) || recordCount > 0) {
+                } else if ((litStations.has(name) || recordCount > 0) && !unlitStations.has(name)) {
                     stationEl.classList.add('lit');
                     if (!litStations.has(name) && recordCount > 0) {
                         litStations.add(name);
@@ -1660,64 +1674,102 @@
                 nameEl.dataset.stationName = name;
                 
                 // 计算名称尺寸
-                const nameWidth = name.length * 13 + 12;
-                const nameHeight = 26;
+                const nameWidth = name.length * 13 + 14;
+                const nameHeight = 28;
+                const spacing = 8;
                 
-                // 尝试多个位置避免重叠
+                // 生成多个候选位置，按优先级排序（更靠近站点）
                 const positions = [
-                    { left: station.x - nameWidth / 2, top: station.y - 35 },
-                    { left: station.x - nameWidth / 2, top: station.y + 22 },
-                    { left: station.x + 22, top: station.y - 8 },
-                    { left: station.x - nameWidth - 22, top: station.y - 8 },
-                    { left: station.x + 22, top: station.y - 30 },
-                    { left: station.x - nameWidth - 22, top: station.y - 30 },
-                    { left: station.x + 22, top: station.y + 15 },
-                    { left: station.x - nameWidth - 22, top: station.y + 15 },
+                    { left: station.x - nameWidth / 2, top: station.y - nameHeight - 5 },
+                    { left: station.x - nameWidth / 2, top: station.y + 24 + 5 },
+                    { left: station.x + 24 + 5, top: station.y - nameHeight / 2 },
+                    { left: station.x - nameWidth - 5, top: station.y - nameHeight / 2 },
+                    { left: station.x + 24 + 5, top: station.y - nameHeight - 3 },
+                    { left: station.x - nameWidth - 5, top: station.y - nameHeight - 3 },
+                    { left: station.x + 24 + 5, top: station.y + 3 },
+                    { left: station.x - nameWidth - 5, top: station.y + 3 },
+                    { left: station.x - nameWidth / 2, top: station.y - nameHeight - 8 },
+                    { left: station.x - nameWidth / 2, top: station.y + nameHeight + 5 },
+                    { left: station.x + nameWidth / 2 + 8, top: station.y - nameHeight / 2 },
+                    { left: station.x - nameWidth * 1.5 - 8, top: station.y - nameHeight / 2 },
                 ];
                 
                 let bestPos = positions[0];
                 let found = false;
+                let bestScore = Infinity;
                 
                 for (const pos of positions) {
-                    let overlaps = false;
+                    const posRight = pos.left + nameWidth;
+                    const posBottom = pos.top + nameHeight;
+                    
+                    if (pos.left < spacing || posRight > 2600 - spacing ||
+                        pos.top < spacing || posBottom > 1800 - spacing) {
+                        continue;
+                    }
+                    
+                    let overlapScore = 0;
+                    let hasOverlap = false;
                     
                     for (const placed of placedNames) {
                         if (rectsOverlap(
                             pos.left, pos.top, nameWidth, nameHeight,
                             placed.left, placed.top, placed.width, placed.height
                         )) {
-                            overlaps = true;
-                            break;
+                            hasOverlap = true;
+                            const dx = Math.min(posRight, placed.left + placed.width) - Math.max(pos.left, placed.left);
+                            const dy = Math.min(posBottom, placed.top + placed.height) - Math.max(pos.top, placed.top);
+                            overlapScore += dx * dy;
                         }
                     }
                     
-                    if (!overlaps && 
-                        pos.left >= 5 && pos.left + nameWidth <= 1395 &&
-                        pos.top >= 5 && pos.top + nameHeight <= 895) {
+                    if (!hasOverlap) {
                         bestPos = pos;
                         found = true;
                         break;
+                    } else if (overlapScore < bestScore) {
+                        bestScore = overlapScore;
+                        bestPos = pos;
                     }
                 }
                 
                 if (!found) {
-                    let minOverlap = Infinity;
-                    for (const pos of positions) {
-                        let overlapCount = 0;
-                        for (const placed of placedNames) {
-                            if (rectsOverlap(
-                                pos.left, pos.top, nameWidth, nameHeight,
-                                placed.left, placed.top, placed.width, placed.height
-                            )) {
-                                overlapCount++;
+                    for (let offset = 1; offset <= 10; offset++) {
+                        const offsetPositions = [
+                            { left: station.x - nameWidth / 2 + offset * 8, top: station.y - 38 },
+                            { left: station.x - nameWidth / 2 - offset * 8, top: station.y - 38 },
+                            { left: station.x - nameWidth / 2, top: station.y - 38 + offset * 8 },
+                            { left: station.x - nameWidth / 2, top: station.y - 38 - offset * 8 },
+                            { left: station.x - nameWidth / 2 + offset * 8, top: station.y + 26 },
+                            { left: station.x - nameWidth / 2 - offset * 8, top: station.y + 26 },
+                        ];
+                        
+                        for (const pos of offsetPositions) {
+                            const posRight = pos.left + nameWidth;
+                            const posBottom = pos.top + nameHeight;
+                            
+                            if (pos.left < spacing || posRight > 1800 - spacing ||
+                                pos.top < spacing || posBottom > 1100 - spacing) {
+                                continue;
+                            }
+                            
+                            let hasOverlap = false;
+                            for (const placed of placedNames) {
+                                if (rectsOverlap(
+                                    pos.left, pos.top, nameWidth, nameHeight,
+                                    placed.left, placed.top, placed.width, placed.height
+                                )) {
+                                    hasOverlap = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!hasOverlap) {
+                                bestPos = pos;
+                                found = true;
+                                break;
                             }
                         }
-                        if (overlapCount < minOverlap &&
-                            pos.left >= 5 && pos.left + nameWidth <= 1395 &&
-                            pos.top >= 5 && pos.top + nameHeight <= 895) {
-                            minOverlap = overlapCount;
-                            bestPos = pos;
-                        }
+                        if (found) break;
                     }
                 }
                 
@@ -1733,7 +1785,7 @@
                 
                 mapContainer.appendChild(nameEl);
                 
-                if (litStations.has(name) || recordCount >= 5) {
+                if ((litStations.has(name) || recordCount >= 5) && !unlitStations.has(name)) {
                     nameEl.style.display = 'none';
                 }
                 
@@ -1749,8 +1801,8 @@
         // 显示提示框
         function showTooltip(e, station) {
             const recordCount = stationRecords[station.name] ? stationRecords[station.name].length : 0;
-            const isSnitch = recordCount >= 5;
-            const isLit = litStations.has(station.name) || recordCount > 0;
+            const isSnitch = recordCount >= 5 && !unlitStations.has(station.name);
+            const isLit = (litStations.has(station.name) || recordCount > 0) && !unlitStations.has(station.name);
             
             let statusText = '🌫️ 迷雾覆盖';
             if (isSnitch) {
@@ -1783,26 +1835,35 @@
         // 处理站点点击
         function handleStationClick(stationEl, name) {
             if (broomMode) {
-                if (litStations.has(name)) {
+                const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
+                const isSnitch = recordCount >= 5;
+                
+                if (litStations.has(name) || isSnitch || recordCount > 0) {
                     litStations.delete(name);
+                    unlitStations.add(name);
                     stationEl.classList.remove('lit');
+                    stationEl.classList.remove('snitch');
                     stationEl.classList.add('fogged');
-                    // 显示站点名称
                     const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
                     if (nameEl) {
                         nameEl.style.display = 'block';
                     }
                 } else {
                     litStations.add(name);
-                    stationEl.classList.add('lit');
+                    unlitStations.delete(name);
+                    if (recordCount >= 5) {
+                        stationEl.classList.add('snitch');
+                    } else {
+                        stationEl.classList.add('lit');
+                    }
                     stationEl.classList.remove('fogged');
-                    // 隐藏站点名称
                     const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
                     if (nameEl) {
                         nameEl.style.display = 'none';
                     }
                 }
                 saveLitStations();
+                saveUnlitStations();
                 updateStats();
             } else {
                 const allStations = new Map();
@@ -1840,10 +1901,13 @@
         // 清除所有点亮
         function clearAllLit() {
             litStations.clear();
+            unlitStations.clear();
             saveLitStations();
+            saveUnlitStations();
             
             document.querySelectorAll('.station').forEach(el => {
                 el.classList.remove('lit');
+                el.classList.remove('snitch');
                 el.classList.add('fogged');
             });
             
@@ -1852,10 +1916,19 @@
 
         // 点亮全部站点
         function showAllStations() {
+            unlitStations.clear();
+            saveUnlitStations();
+            
             document.querySelectorAll('.station').forEach(el => {
                 const name = el.dataset.name;
+                const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
                 litStations.add(name);
-                el.classList.add('lit');
+                
+                if (recordCount >= 5) {
+                    el.classList.add('snitch');
+                } else {
+                    el.classList.add('lit');
+                }
                 el.classList.remove('fogged');
             });
             
@@ -2162,7 +2235,11 @@
             
             stationEl.classList.remove('fogged', 'lit', 'snitch');
             
-            if (recordCount >= 5) {
+            if (unlitStations.has(stationName)) {
+                stationEl.classList.add('fogged');
+                litStations.delete(stationName);
+                if (nameEl) nameEl.style.display = '';
+            } else if (recordCount >= 5) {
                 stationEl.classList.add('snitch');
                 litStations.add(stationName);
                 if (nameEl) nameEl.style.display = 'none';
@@ -2250,6 +2327,7 @@
         // 初始化
         function init() {
             loadLitStations();
+            loadUnlitStations();
             loadStationRecords();
             drawMetroLines();
             drawStations();
