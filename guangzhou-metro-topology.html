@@ -14,7 +14,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3Cfilter id='g' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.2'/%3E%3CfeMerge%3E%3CfeMergeNode/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M2 28 L8 20 L12 18 L18 10' stroke='%23b8956a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' filter='url(%23g)'/%3E%3Ccircle cx='8' cy='20' r='1.8' fill='%23c4a57b' opacity='0.9'/%3E%3Ccircle cx='12' cy='18' r='1.8' fill='%23c4a57b' opacity='0.9'/%3E%3Ccircle cx='18' cy='10' r='3.2' fill='%23e0e0e0' stroke='%23c0c0c0' stroke-width='0.6' filter='url(%23g)'/%3E%3Ccircle cx='18' cy='10' r='1.2' fill='%23fff'/%3E%3C/svg%3E") 18 10, auto;
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cdefs%3E%3Cfilter id='glow' x='-50%25' y='-50%25' width='200%25' height='200%25'%3E%3CfeGaussianBlur stdDeviation='1.5'/%3E%3CfeMerge%3E%3CfeMergeNode/%3E%3CfeMergeNode in='SourceGraphic'/%3E%3C/feMerge%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M3 30 L10 22 L15 18 L22 10 L28 4' stroke='%238b6914' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='10' cy='22' r='2.2' fill='%23c4a57b' stroke='%238b6914' stroke-width='0.8'/%3E%3Ccircle cx='18' cy='14' r='2.2' fill='%23c4a57b' stroke='%238b6914' stroke-width='0.8'/%3E%3Ccircle cx='28' cy='4' r='3.5' fill='%23a0a0a0' stroke='%23d0d0d0' stroke-width='0.8' filter='url(%23glow)'/%3E%3Ccircle cx='28' cy='4' r='2' fill='%23c0c0c0'/%3E%3Ccircle cx='28' cy='4' r='0.8' fill='%23ffffff'/%3E%3C/svg%3E") 28 4, auto;
         }
         /* 咒语登录界面 */
         .spell-screen {
@@ -471,6 +471,37 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
+
+        .search-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid rgba(148, 0, 211, 0.6);
+            background: linear-gradient(135deg, rgba(75, 0, 130, 0.9) 0%, rgba(148, 0, 211, 0.8) 100%);
+            color: #ffd700;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 0 20px rgba(148, 0, 211, 0.5),
+                inset 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .search-btn:hover {
+            transform: scale(1.15);
+            box-shadow: 
+                0 0 30px rgba(148, 0, 211, 0.8),
+                inset 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .search-btn:active {
+            transform: scale(0.95);
+        }
         .zoom-btn:hover {
             background: rgba(255, 215, 0, 0.2);
             transform: scale(1.1);
@@ -525,26 +556,6 @@
             font-size: 32px;
         }
 
-        .golden-castle {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
-            animation: goldenPulse 1.5s ease-in-out infinite;
-        }
-        .station.transfer .golden-castle {
-            width: 40px;
-            height: 40px;
-            font-size: 36px;
-        }
-        @keyframes goldenPulse {
-            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8)); }
-            50% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1)); }
-        }
-
         .locked-spiderweb {
             width: 28px;
             height: 28px;
@@ -576,13 +587,6 @@
             transform: translate(-50%, -50%);
         }
 
-        .station.snitch {
-            background: none;
-            border: none;
-            box-shadow: none;
-            animation: castleGlow 2s ease-in-out infinite;
-        }
-
         .station.fogged {
             background: none;
             border: none;
@@ -607,6 +611,206 @@
                 filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
             }
         }
+
+        .search-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .search-modal-overlay.show {
+            display: flex;
+        }
+        .search-modal {
+            width: 450px;
+            background: linear-gradient(135deg, #d4a574 0%, #c4956a 50%, #dbb896 100%);
+            border: 3px solid #8b6914;
+            border-radius: 15px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 0 40px rgba(139, 105, 20, 0.2);
+            overflow: hidden;
+            animation: parchmentOpen 0.5s ease-out;
+        }
+        @keyframes parchmentOpen {
+            0% {
+                transform: scale(0.8) rotateY(-15deg);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1) rotateY(0);
+                opacity: 1;
+            }
+        }
+        .search-modal-header {
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(139, 105, 20, 0.3) 0%, transparent 100%);
+            border-bottom: 2px solid #8b6914;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-modal-header h3 {
+            color: #5d4e37;
+            font-size: 18px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-close-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #8b6914;
+            background: rgba(139, 105, 20, 0.2);
+            color: #5d4e37;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .search-close-btn:hover {
+            background: rgba(139, 105, 20, 0.4);
+            transform: rotate(90deg);
+        }
+        .search-input-wrapper {
+            padding: 15px 20px;
+            background: rgba(139, 105, 20, 0.1);
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #8b6914;
+            border-radius: 8px;
+            background: rgba(255, 248, 220, 0.9);
+            color: #5d4e37;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            box-shadow: 0 0 15px rgba(139, 105, 20, 0.4);
+            border-color: #a0522d;
+        }
+        .search-input::placeholder {
+            color: #9a8a6a;
+        }
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .search-results::-webkit-scrollbar {
+            width: 8px;
+        }
+        .search-results::-webkit-scrollbar-track {
+            background: rgba(139, 105, 20, 0.1);
+            border-radius: 4px;
+        }
+        .search-results::-webkit-scrollbar-thumb {
+            background: #8b6914;
+            border-radius: 4px;
+        }
+        .search-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 248, 220, 0.6);
+            border: 1px solid rgba(139, 105, 20, 0.2);
+            transition: all 0.3s ease;
+        }
+        .search-item:hover {
+            background: rgba(255, 248, 220, 0.9);
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(139, 105, 20, 0.2);
+        }
+        .search-item-name {
+            color: #5d4e37;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .search-item-lines {
+            color: #8b6914;
+            font-size: 12px;
+        }
+        .search-no-results {
+            text-align: center;
+            padding: 30px;
+            color: #9a8a6a;
+            font-size: 14px;
+        }
+
+        .floo-powder {
+            position: fixed;
+            pointer-events: none;
+            z-index: 3000;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        .floo-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #00ff88 0%, #00cc6a 50%, transparent 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88, 0 0 20px #00cc6a;
+            animation: flooFloat 1.5s ease-out forwards;
+        }
+        @keyframes flooFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-50px) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.2);
+            }
+        }
+        .floo-burst {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.8) 0%, rgba(0, 204, 106, 0.4) 40%, transparent 70%);
+            animation: flooBurst 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 3001;
+        }
+        @keyframes flooBurst {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.5);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(3);
+            }
+        }
+
         .station-name {
             position: absolute;
             font-size: 13px;
@@ -1046,20 +1250,12 @@
         <div class="legend">
             <div class="legend-title">图例说明</div>
             <div class="legend-item">
-                <div class="legend-icon legend-fog">🌫</div>
+                <div class="legend-icon" style="background:transparent;font-size:20px;">🕸️</div>
                 <span>迷雾覆盖（未探索）</span>
             </div>
             <div class="legend-item">
-                <div class="legend-icon" style="background:transparent;font-size:20px;">🧹</div>
-                <span>已点亮（飞天扫把）</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-icon" style="background:transparent;">
-                    <div style="position:relative;width:24px;height:24px;margin:0 auto;">
-                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:12px;height:12px;background:radial-gradient(circle at 30% 30%, #fff7a8, #ffd700);border-radius:50%;"></div>
-                    </div>
-                </div>
-                <span>传说级（金色飞贼·5次+）</span>
+                <div class="legend-icon" style="background:transparent;font-size:20px;">🏰</div>
+                <span>已点亮（霍格沃茨塔楼）</span>
             </div>
             <div class="legend-item">
                 <div class="legend-icon" style="background:#fff;border:3px solid #333;width:24px;height:24px;">⬤</div>
@@ -1082,6 +1278,21 @@
         <button class="zoom-btn" id="zoomIn" onclick="zoomIn()">🔍+</button>
         <button class="zoom-btn" id="zoomOut" onclick="zoomOut()">🔍-</button>
         <button class="zoom-btn" id="zoomReset" onclick="resetZoom()">↺</button>
+    </div>
+    
+    <button class="search-btn" id="searchBtn" onclick="openSearchModal()">🔮</button>
+    
+    <div class="search-modal-overlay" id="searchModal">
+        <div class="search-modal">
+            <div class="search-modal-header">
+                <h3>🔮 飞路粉传送</h3>
+                <button class="search-close-btn" onclick="closeSearchModal()">✕</button>
+            </div>
+            <div class="search-input-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="输入站点名称..." oninput="searchStations()">
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
     </div>
     
     <div class="tooltip" id="tooltip"></div>
@@ -1682,13 +1893,7 @@
                 
                 // 检查站点状态（根据记录数）
                 const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
-                if (recordCount >= 5 && !unlitStations.has(name)) {
-                    stationEl.classList.add('snitch');
-                    const goldenCastle = document.createElement('div');
-                    goldenCastle.className = 'golden-castle';
-                    goldenCastle.textContent = '🏰';
-                    stationEl.appendChild(goldenCastle);
-                } else if ((litStations.has(name) || recordCount > 0) && !unlitStations.has(name)) {
+                if ((litStations.has(name) || recordCount > 0) && !unlitStations.has(name)) {
                     stationEl.classList.add('lit');
                     if (!litStations.has(name) && recordCount > 0) {
                         litStations.add(name);
@@ -1827,7 +2032,7 @@
                 
                 mapContainer.appendChild(nameEl);
                 
-                if ((litStations.has(name) || recordCount >= 5) && !unlitStations.has(name)) {
+                if ((litStations.has(name) || recordCount > 0) && !unlitStations.has(name)) {
                     nameEl.style.display = 'none';
                 }
                 
@@ -1843,14 +2048,11 @@
         // 显示提示框
         function showTooltip(e, station) {
             const recordCount = stationRecords[station.name] ? stationRecords[station.name].length : 0;
-            const isSnitch = recordCount >= 5 && !unlitStations.has(station.name);
             const isLit = (litStations.has(station.name) || recordCount > 0) && !unlitStations.has(station.name);
             
             let statusText = '🌫️ 迷雾覆盖';
-            if (isSnitch) {
-                statusText = '🌟 金色飞贼（传说级）';
-            } else if (isLit) {
-                statusText = '🧹 已点亮';
+            if (isLit) {
+                statusText = '🏰 已点亮';
             }
             
             tooltip.innerHTML = `
@@ -1878,13 +2080,11 @@
         function handleStationClick(stationEl, name) {
             if (broomMode) {
                 const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
-                const isSnitch = recordCount >= 5;
                 
-                if (litStations.has(name) || isSnitch || recordCount > 0) {
+                if (litStations.has(name) || recordCount > 0) {
                     litStations.delete(name);
                     unlitStations.add(name);
                     stationEl.classList.remove('lit');
-                    stationEl.classList.remove('snitch');
                     stationEl.classList.add('fogged');
                     stationEl.innerHTML = '';
                     const lockedSpiderweb = document.createElement('div');
@@ -1900,19 +2100,11 @@
                     unlitStations.delete(name);
                     stationEl.classList.remove('fogged');
                     stationEl.innerHTML = '';
-                    if (recordCount >= 5) {
-                        stationEl.classList.add('snitch');
-                        const goldenCastle = document.createElement('div');
-                        goldenCastle.className = 'golden-castle';
-                        goldenCastle.textContent = '🏰';
-                        stationEl.appendChild(goldenCastle);
-                    } else {
-                        stationEl.classList.add('lit');
-                        const castleTower = document.createElement('div');
-                        castleTower.className = 'castle-tower';
-                        castleTower.textContent = '🏰';
-                        stationEl.appendChild(castleTower);
-                    }
+                    stationEl.classList.add('lit');
+                    const castleTower = document.createElement('div');
+                    castleTower.className = 'castle-tower';
+                    castleTower.textContent = '🏰';
+                    stationEl.appendChild(castleTower);
                     const nameEl = document.querySelector(`.station-name[data-station-name="${name}"]`);
                     if (nameEl) {
                         nameEl.style.display = 'none';
@@ -1982,25 +2174,15 @@
             
             document.querySelectorAll('.station').forEach(el => {
                 const name = el.dataset.name;
-                const recordCount = stationRecords[name] ? stationRecords[name].length : 0;
                 litStations.add(name);
                 
                 el.classList.remove('fogged');
                 el.innerHTML = '';
-                
-                if (recordCount >= 5) {
-                    el.classList.add('snitch');
-                    const goldenCastle = document.createElement('div');
-                    goldenCastle.className = 'golden-castle';
-                    goldenCastle.textContent = '🏰';
-                    el.appendChild(goldenCastle);
-                } else {
-                    el.classList.add('lit');
-                    const castleTower = document.createElement('div');
-                    castleTower.className = 'castle-tower';
-                    castleTower.textContent = '🏰';
-                    el.appendChild(castleTower);
-                }
+                el.classList.add('lit');
+                const castleTower = document.createElement('div');
+                castleTower.className = 'castle-tower';
+                castleTower.textContent = '🏰';
+                el.appendChild(castleTower);
             });
             
             saveLitStations();
@@ -2440,6 +2622,49 @@
             });
         }
 
+        document.addEventListener('click', function(e) {
+            const burst = document.createElement('div');
+            burst.style.position = 'fixed';
+            burst.style.left = `${e.clientX}px`;
+            burst.style.top = `${e.clientY}px`;
+            burst.style.width = '60px';
+            burst.style.height = '60px';
+            burst.style.transform = 'translate(-50%, -50%)';
+            burst.style.background = 'radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0.5) 30%, transparent 70%)';
+            burst.style.borderRadius = '50%';
+            burst.style.pointerEvents = 'none';
+            burst.style.zIndex = '9999';
+            burst.style.animation = 'mouseClickBurst 0.4s ease-out forwards';
+            burst.style.animation = 'mouseClickBurst 0.4s ease-out forwards';
+            burst.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(255, 215, 0, 0.5)';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes mouseClickBurst {
+                    0% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(0);
+                    }
+                    50% {
+                        opacity: 0.8;
+                        transform: translate(-50%, -50%) scale(1.2);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(2);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(burst);
+            
+            setTimeout(() => {
+                burst.remove();
+                style.remove();
+            }, 500);
+        });
+
         function createFootprint(x, y) {
             const footprint = document.createElement('div');
             footprint.className = 'footprint';
@@ -2460,6 +2685,139 @@
             setTimeout(() => {
                 footprint.remove();
             }, 3000);
+        }
+
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.add('show');
+            document.getElementById('searchInput').focus();
+            searchStations();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.remove('show');
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '';
+        }
+
+        function searchStations() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsContainer = document.getElementById('searchResults');
+            const allStations = new Map();
+            
+            for (const [lineName, stations] of Object.entries(metroTopology)) {
+                stations.forEach(station => {
+                    if (!allStations.has(station.name)) {
+                        allStations.set(station.name, {
+                            ...station,
+                            lines: [lineName]
+                        });
+                    } else {
+                        allStations.get(station.name).lines.push(lineName);
+                    }
+                });
+            }
+            
+            const matched = [];
+            allStations.forEach((station, name) => {
+                if (query === '' || name.includes(query) || name.toLowerCase().includes(query.toLowerCase())) {
+                    matched.push({ name, station });
+                }
+            });
+            
+            matched.sort((a, b) => a.name.localeCompare(b.name));
+            
+            if (matched.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-no-results">🔮 没有找到匹配的站点</div>';
+                return;
+            }
+            
+            resultsContainer.innerHTML = matched.map(item => `
+                <div class="search-item" onclick="selectStation('${item.name}')">
+                    <span class="search-item-name">${item.name}</span>
+                    <span class="search-item-lines">${item.station.lines.join('、')}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectStation(name) {
+            closeSearchModal();
+            
+            const allStations = new Map();
+            for (const [lineName, stations] of Object.entries(metroTopology)) {
+                stations.forEach(station => {
+                    if (!allStations.has(station.name)) {
+                        allStations.set(station.name, {
+                            ...station,
+                            lines: [lineName]
+                        });
+                    } else {
+                        allStations.get(station.name).lines.push(lineName);
+                    }
+                });
+            }
+            
+            const station = allStations.get(name);
+            if (station) {
+                scrollToStation(station.x, station.y);
+                createFlooPowder(station.x, station.y);
+            }
+        }
+
+        function scrollToStation(x, y) {
+            const wrapper = document.getElementById('metro-map-wrapper');
+            const mapWidth = mapContainer.offsetWidth;
+            const mapHeight = mapContainer.offsetHeight;
+            const wrapperWidth = wrapper.offsetWidth;
+            const wrapperHeight = wrapper.offsetHeight;
+            
+            const scrollX = x - wrapperWidth / 2;
+            const scrollY = y - wrapperHeight / 2;
+            
+            wrapper.scrollTo({
+                left: Math.max(0, Math.min(scrollX, mapWidth - wrapperWidth)),
+                top: Math.max(0, Math.min(scrollY, mapHeight - wrapperHeight)),
+                behavior: 'smooth'
+            });
+        }
+
+        function createFlooPowder(x, y) {
+            const flooContainer = document.createElement('div');
+            flooContainer.className = 'floo-powder';
+            document.body.appendChild(flooContainer);
+            
+            const wrapperRect = document.getElementById('metro-map-wrapper').getBoundingClientRect();
+            const mapRect = mapContainer.getBoundingClientRect();
+            
+            const screenX = wrapperRect.left + (x - mapContainer.scrollLeft);
+            const screenY = wrapperRect.top + (y - mapContainer.scrollTop);
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floo-particle';
+                
+                const angle = (Math.PI * 2 * i) / 50;
+                const distance = 20 + Math.random() * 60;
+                const offsetX = Math.cos(angle) * distance;
+                const offsetY = Math.sin(angle) * distance;
+                
+                particle.style.left = `${screenX + offsetX}px`;
+                particle.style.top = `${screenY + offsetY}px`;
+                particle.style.animationDelay = `${Math.random() * 0.5}s`;
+                particle.style.width = `${4 + Math.random() * 6}px`;
+                particle.style.height = particle.style.width;
+                
+                flooContainer.appendChild(particle);
+            }
+            
+            const burst = document.createElement('div');
+            burst.className = 'floo-burst';
+            burst.style.left = `${screenX - 50}px`;
+            burst.style.top = `${screenY - 50}px`;
+            flooContainer.appendChild(burst);
+            
+            setTimeout(() => {
+                flooContainer.remove();
+            }, 2000);
         }
 
         init();
